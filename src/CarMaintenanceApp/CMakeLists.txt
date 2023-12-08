@@ -1,6 +1,6 @@
 # aka5g/CMakeLists.txt
 set(ROOT src)
-set(APPNAME calculatorapp)
+set(APPNAME CarMaintenanceapp)
 
 message(STATUS "[${ROOT}/${APPNAME}] Module Processing...")
 
@@ -26,7 +26,7 @@ target_include_directories(${APPNAME} PUBLIC
 						   ${CMAKE_CURRENT_SOURCE_DIR}/header)
 
 # Add any dependencies or compile options specific to lock6g
-target_link_libraries(${APPNAME} PRIVATE calculator utility)
+target_link_libraries(${APPNAME} PRIVATE CarMaintenance utility)
 
 install(TARGETS ${APPNAME}
         LIBRARY DESTINATION lib

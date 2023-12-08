@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="class_coruh_1_1_utility_1_1_math_utility" kind="class"><name>Coruh::Utility::MathUtility</name>
+    <member refid="class_coruh_1_1_utility_1_1_math_utility_1abe3d63ed2737ae3c006bcc5732a3d01f" kind="function"><name>calculateMean</name></member>
+    <member refid="class_coruh_1_1_utility_1_1_math_utility_1aa5888ea1bef95e477a66c2dd8517b885" kind="function"><name>calculateMedian</name></member>
+    <member refid="class_coruh_1_1_utility_1_1_math_utility_1a8a30d3bb9945b043c861257596f17c30" kind="function"><name>compareDouble</name></member>
+    <member refid="class_coruh_1_1_utility_1_1_math_utility_1ac66a656b821b690761a1db545359508d" kind="function"><name>calculateMinMax</name></member>
+  </compound>
+  <compound refid="namespace_coruh" kind="namespace"><name>Coruh</name>
+  </compound>
+  <compound refid="namespace_coruh_1_1_utility" kind="namespace"><name>Coruh::Utility</name>
+  </compound>
+  <compound refid="_r_e_a_d_m_e_8md" kind="file"><name>README.md</name>
+  </compound>
+  <compound refid="common_types_8h" kind="file"><name>commonTypes.h</name>
+  </compound>
+  <compound refid="math_utility_8h" kind="file"><name>mathUtility.h</name>
+  </compound>
+  <compound refid="math_utility_8cpp" kind="file"><name>mathUtility.cpp</name>
+  </compound>
+  <compound refid="dir_1a3b8499b331fe4e1564b1eb295a0893" kind="dir"><name>src/utility/header</name>
+  </compound>
+  <compound refid="dir_68267d1309a1af8e8297ef4c3efbcdba" kind="dir"><name>src</name>
+  </compound>
+  <compound refid="dir_e82d5b00f3064e3249317b7e44769fc6" kind="dir"><name>src/utility/src</name>
+  </compound>
+  <compound refid="dir_0619a8f54b4fad7043a6de45be8fde0b" kind="dir"><name>src/utility</name>
+  </compound>
+  <compound refid="indexpage" kind="page"><name>index</name>
+  </compound>
+</doxygenindex>

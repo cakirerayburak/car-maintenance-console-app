@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2023-12-09_01-19-48" tag="">
+  <assembly name="Default">
+    <class name="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\tests\utility\utility_test.cpp" coveredlines="1" coverablelines="14" totallines="144" coveredbranches="0" totalbranches="0" coveredcodeelements="0" totalcodeelements="0" />
+  </assembly>
+</coverage>
