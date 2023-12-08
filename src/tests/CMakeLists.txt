@@ -39,6 +39,6 @@ endif()
 
 # Calculator tests
 if(ENABLE_CALCULATOR)
-	add_subdirectory(calculator)
+	add_subdirectory(CarMaintenance)
 endif()
 

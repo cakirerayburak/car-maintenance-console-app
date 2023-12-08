@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef CALCULATOR_APP_H
-#define CALCULATOR_APP_H
+#ifndef CARMAINTENANCE_APP_H
+#define CARMAINTENANCE_APP_H
 
 
 #endif // CALCULATOR_APP_H

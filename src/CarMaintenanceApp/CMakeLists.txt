@@ -22,7 +22,7 @@ add_executable(${APPNAME} ${APP_HEADERS} ${APP_SOURCES}) # for dynamic library u
 
 target_include_directories(${APPNAME} PUBLIC
 						   ${CMAKE_CURRENT_SOURCE_DIR}/../utility/header
-						   ${CMAKE_CURRENT_SOURCE_DIR}/../calculator/header
+						   ${CMAKE_CURRENT_SOURCE_DIR}/../CarMaintenance/header
 						   ${CMAKE_CURRENT_SOURCE_DIR}/header)
 
 # Add any dependencies or compile options specific to lock6g
