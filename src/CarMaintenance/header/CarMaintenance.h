@@ -29,10 +29,12 @@ struct Project {
  * @brief Represents a task with details.
  */
 struct Task {
+  char brand[30]; /**<Car Name*/
+  char driverName[50]; /**<Driver Name*/
   char description[100]; /**< Description of the task. */
   char assignee[50]; /**< Assignee of the task. */
   char date[20]; /**< Date information related to the task. */
-  bool status; /**< Status of the task. */
+  int status; /**< Status of the task. */
 };
 
 /**
@@ -57,14 +59,104 @@ struct Supplier {
   char bussinesType[25]; /**< Business type of the supplier. */
 };
 
+/**
+ * @brief Adds users to the system.
+ *
+ * This function adds the specified users to the system. If the system file does not exist,
+ * it is created. Each added user is appended to the end of the file.
+ *
+ * @param users An array containing the users.
+ * @param userNumber The number of users to add.
+ * @return A value representing the success status. 0 indicates success, -1 indicates an error.
+ *
+ * @note The file name and user information should follow a specific structure.
+ * @warning If there is an error opening the file, an error message is printed.
+ */
 int addUser(struct User users[],size_t userNumber);
+
+/**
+ * @brief Reads users from the system and prints their information.
+ *
+ * This function opens the system file and reads user information from it.
+ * It prints the username, password, and status of each user to the console.
+ *
+ * @return A value representing the success status. 0 indicates success, 1 indicates an error.
+ *
+ * @note The system file should exist, and the user structure in the file should follow a specific format.
+ * @warning If there is an error opening the file, an error message is printed.
+ */
 int readUser();
+
+/**
+ * @brief Deletes a user from the system.
+ *
+ * This function deletes the user with the specified username from the system file.
+ *
+ * @param username The username of the user to be deleted.
+ * @return A value representing the success status. 0 indicates success, -1 indicates an error, 1 indicates user not found.
+ *
+ * @note The system file should exist, and the user structure in the file should follow a specific format.
+ * @warning If there is an error opening the file or the specified user is not found, an error message is printed.
+ */
 int deletUser(const char *username);
-int updateUser();
-int addProject(struct Project project[]);
-int deleteProject();
+
+
+int updateUser();// kalsin
+
+/**
+ * @brief Adds projects to the system.
+ *
+ * This function adds the specified projects to the system. If the system file does not exist,
+ * it is created. Each added project is appended to the end of the file.
+ *
+ * @param project An array containing the projects.
+ * @param projectNumber The number of projects to add.
+ * @return A value representing the success status. 0 indicates success, -1 indicates an error.
+ *
+ * @note The file name and project information should follow a specific structure.
+ * @warning If there is an error opening the file, an error message is printed.
+ */
+int addProject(struct Project project[],size_t projectNumber);
+
+/**
+ * @brief Reads projects from the system and prints their information.
+ *
+ * This function opens the system file and reads project information from it.
+ * It prints the brand, year, action, driver name, driver phone, kilometer, date, status, and other details
+ * of each project to the console.
+ *
+ * @return A value representing the success status. 1 indicates success, 0 indicates an error.
+ *
+ * @note The system file should exist, and the project structure in the file should follow a specific format.
+ * @warning If there is an error opening the file, an error message is printed.
+ */
+int readProject();
+
+/**
+ * @brief Updates a project's information in the system.
+ *
+ * This function updates the information of the project with the specified driver name in the system file.
+ *
+ * @return A value representing the success status. 0 indicates success, -1 indicates an error.
+ *
+ * @note The system file should exist, and the project structure in the file should follow a specific format.
+ * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
+ */
+int deleteProject(const char *driverName);
+
+/**
+ * @brief Updates a project's information in the system.
+ *
+ * This function updates the information of the project with the specified driver name in the system file.
+ *
+ * @return A value representing the success status. 0 indicates success, -1 indicates an error.
+ *
+ * @note The system file should exist, and the project structure in the file should follow a specific format.
+ * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
+ */
 int updateProject();
-int addTask();
-int deleteTask();
-int updateTaskStatus();
+
+int addTask(struct Task task[],size_t taskNumber);
+int readTask();
+int updateTaskStatus(struct Task task[], const char *driverName, int status);
 #endif
