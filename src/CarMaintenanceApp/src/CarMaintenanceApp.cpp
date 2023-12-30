@@ -1,123 +1,41 @@
-/**
- * @file calculatorapp.cpp
- * @brief A simple program to demonstrate the usage of the calculator model class.
- *
- * This program process infix notations and calculate operations
- *
- */
-
-// Standard Libraries
 #include <iostream>
-#include <stack>
+#include <fstream>
 #include <string>
-#include <sstream>
-#include <stdexcept>
-#include "../../CarMaintenance/header/CarMaintenance.h"  // Adjust this include path based on your project structure
-
-using namespace Coruh::Calculator;
-
-bool isOperator(char c) {
-  return (c == '+' || c == '-' || c == '*' || c == '/');
-}
-
-int precedence(char c) {
-  if(c == '+' || c == '-') return 1;
-
-  if(c == '*' || c == '/') return 2;
-
-  return 0;
-}
-
-std::string infixToPostfix(const std::string &infix) {
-  std::stack<char> s;
-  std::ostringstream postfix;
-
-  for(char c : infix) {
-    if(std::isdigit(c)) {
-      postfix << c;
-    } else if(isOperator(c)) {
-      while(!s.empty() && precedence(s.top()) >= precedence(c)) {
-        postfix << ' ' << s.top();
-        s.pop();
-      }
-
-      postfix << ' ';
-      s.push(c);
-    } else if(c == '(') {
-      s.push(c);
-    } else if(c == ')') {
-      while(!s.empty() && s.top() != '(') {
-        postfix << ' ' << s.top();
-        s.pop();
-      }
-
-      s.pop();
-    }
-  }
-
-  while(!s.empty()) {
-    postfix << ' ' << s.top();
-    s.pop();
-  }
-
-  return postfix.str();
-}
-
-double evaluatePostfix(const std::string &postfix) {
-  std::stack<double> s;
-  std::istringstream iss(postfix);
-  std::string token;
-
-  while(iss >> token) {
-    if(isOperator(token[0])) {
-      double b = s.top();
-      s.pop();
-      double a = s.top();
-      s.pop();
-      double result;
-
-      switch(token[0]) {
-        case '+':
-          result = Calculator::add(a, b);
-          break;
-
-        case '-':
-          result = Calculator::subtract(a, b);
-          break;
-
-        case '*':
-          result = Calculator::multiply(a, b);
-          break;
-
-        case '/':
-          if (b == 0) {
-            throw std::invalid_argument("Division by zero is not allowed.");
-          }
-
-          result = Calculator::divide(a, b);
-          break;
-      }
-
-      s.push(result);
-    } else {
-      s.push(std::stod(token));
-    }
-  }
-
-  return s.top();
-}
+#include <CarMaintenance.h>
+using namespace HufmanAlgorithm;
 
 int main() {
-  std::string infix;
-  std::cout << "Enter an infix expression: ";
-  std::getline(std::cin, infix);
+  char fileName[] = "test.bin";
+  char encryptedFileName[] = "encrypted.bin";
+  char decryptedFileName[] = "decrypted.bin";
+  char name1[50], password1[50], name2[50], password2[50];
+  printf("1. Isim: ");
+  scanf("%s", name1);
+  printf("1. Sifre: ");
+  scanf("%s", password1);
+  printf("2. Isim: ");
+  scanf("%s", name2);
+  printf("2. Sifre: ");
+  scanf("%s", password2);
+  int result = createBinaryFile(fileName, name1, password1, name2, password2);
 
-  try {
-    std::string postfix = infixToPostfix(infix);
-    double result = evaluatePostfix(postfix);
-    std::cout << "Result: " << result << std::endl;
-  } catch(const std::invalid_argument &e) {
-    std::cerr << "Error: " << e.what() << std::endl;
+  if (result != 0) {
+    fprintf(stderr, "Binary dosya olusturma hatasi!\n");
+    return -1;
+  }
+
+  result = encryptFile(fileName, encryptedFileName);
+
+  if (result != 0) {
+    fprintf(stderr, "Dosya sifreleme hatasi!\n");
+    return -1;
+  }
+
+  result = decryptFile(encryptedFileName, decryptedFileName);
+
+  if (result != 0) {
+    fprintf(stderr, "Dosya sifre cozme hatasi!\n");
+    return -1;
   }
 
   return 0;
