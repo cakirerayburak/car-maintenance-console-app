@@ -18,7 +18,7 @@ source_group("header" FILES ${LIB_HEADERS})
 source_group("src" FILES ${LIB_SOURCES})
 
 # Set Properties->General->Configuration Type to Dynamic Library (.dll/.so/.dylib)
-add_library(${LIBNAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES}) # for dynamic library use SHARED
+add_library(${LIBNAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES} "src/CarMaintenance.cpp") # for dynamic library use SHARED
 
 target_include_directories(${LIBNAME} PUBLIC
 						   ${CMAKE_CURRENT_SOURCE_DIR}/../utility/header
