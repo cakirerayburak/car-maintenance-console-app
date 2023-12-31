@@ -14,7 +14,7 @@ TEST(CarMaintenanceTest, AddReadAndDeleteUser) {
   std::string output = testing::internal::GetCapturedStdout();
   ASSERT_TRUE(output.find("Username: testuser, Passsword: 1234, Status: 1") != std::string::npos);
   // Delete the user
-  ASSERT_EQ(deletUser("testuser"), 0);
+  ASSERT_EQ(deleteUser("testuser"), 0);
   // Read the user again and check if it's deleted
   testing::internal::CaptureStdout();
   ASSERT_EQ(readUser(), 0);

@@ -1,8 +1,78 @@
+/**
+ * @file CarMaintenance.h
+ * @brief Declarations and definitions for the Car Maintenance application.
+ */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include "CarMaintenance.h"
 #include <string.h>
+#include <conio.h>
+#include <windows.h>
+#include "MainMenu.h"
+
+
+/**
+ * @brief Width of the screen.
+ */
+int screenWidth = 80;
+
+/**
+ * @brief Height of the screen.
+ */
+int screenHeight = 24;
+int x = (screenWidth - 32) / 2;
+int y = (screenHeight - 11) / 2;
+
+char username[] = "admin";
+char password[] = "123";
+
+
+
+const char *loginMenu[] = {
+  "             Login             ",
+  "            Register           ",
+  "           Guest Mod           "
+};
+
+const char *authenticetedOptions[] = {
+  "   Project and Budget Planning  ",
+  "  Task Assignment and Tracking  ",
+  "   Cost Analysis and Reporting  ",
+  "Supplier and Contractor Database",
+  "         Integrations           ",
+  "             Exit               "
+};
+
+const char *projectOptions[] = {
+  "         Create Project         ",
+  "          View Project          ",
+  "          Edit Project          ",
+  "         Delete Project         ",
+  "       Return to Main Menu      "
+};
+
+
+const char *taskOptions[] = {
+  "          Assign Task           ",
+  "          View Tasks            ",
+  "       Update Task Status       ",
+  "       Return to Main Menu      "
+};
+
+const char *costOptions[] = {
+  "           Add Expense          ",
+  "          View Expenses         ",
+  "         Generate Reports       ",
+  "       Return to Main Menu      "
+};
+
+const char *supplierOptions[] = {
+  "           Add Supplier         ",
+  "          Edit Supplier         ",
+  "         Delete Supplier        ",
+  "       Return to Main Menu      "
+};
 
 /**
  * @brief Adds users to a file.
@@ -82,7 +152,7 @@ int readUser() {
  * @note The "login.bin" file should exist, and the user structure in the file should follow a specific format.
  * @warning If there is an error opening the file or the specified user is not found, an error message is printed.
  */
-int deletUser(const char *username) {
+int deleteUser(const char *username) {
   FILE *fp;
   errno_t err = fopen_s(&fp, "login.bin", "rb+");;
 
@@ -561,5 +631,112 @@ int deleteSupplier(const char *supplierName) {
   struct Supplier nullSupplier = { 0 };
   fwrite(&nullSupplier, sizeof(struct Supplier), 1, fp);
   fclose(fp);
+  return 1;
+}
+
+int setCursorPosition(int x, int y) {
+  if (x < 1 || y < 1) {
+    // Koordinatlar geçersizse hata kodu döndür
+    return -1;
+  }
+
+  fprintf(stdout, "\033[%d;%dH", y, x);
+  // Baþarý durumunda 0 döndür
+  return 0;
+}
+
+int setTextColor(int color) {
+  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+  return 1;
+}
+
+int setBackgorundColor(int backgroundColor) {
+  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), backgroundColor << 4);
+  return 1;
+}
+
+
+
+
+int mainMenu() {
+  int selectedOption = 0;
+  int x = 30;
+  int y = 10;
+
+  while (0 == 0) {
+    displayMenu(*loginMenu, selectedOption, 6, x, y);
+    char key = _getch();
+
+    if (key == 72 && selectedOption >= 0) {
+      if (selectedOption == 0) {
+        selectedOption = 5;
+      } else {
+        selectedOption--;
+      }
+    } else if (key == 80 && selectedOption <= 5) {
+      if (selectedOption == 5) {
+        selectedOption = 0;
+      } else {
+        selectedOption++;
+      }
+    } else if (key == 13) {
+      if (selectedOption == 0) {
+        if (false) {
+          //loginMenu()) {
+          //materialManagementMenu();
+        }
+      } else if (selectedOption == 5) {
+        break;
+      } else if (selectedOption == 1) {
+        //stockControlMenu();
+      } else if (selectedOption == 2) {
+        //warehouseOptimizationMenu();
+      } else if (selectedOption == 3) {
+        //reportingMenu();
+      } else if (selectedOption == 4) {
+        //integrationMenu();
+      }
+    }
+  }
+
+  return 1;
+}
+
+int displayMenu(const char *menuOptions, int selectedOption, int menuSize, int x, int y) {
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  system("cls");
+  setCursorPosition(x + 15, y);
+
+  for (int i = 0; i <= 43; i++) {
+    printf("=");
+  }
+
+  setCursorPosition(x + 20, y + 1);
+  printf("Warehouse Management System Menu");
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+    printf("=");
+  }
+
+  for (int i = 0; i < menuSize; i++) {
+    setCursorPosition(x + 22, y + 3 + i);
+
+    if (i == selectedOption) {
+      setTextColor(10); // 12 numaralý renk kodu kýrmýzý renktir
+      printf("> %c <\n", menuOptions[i]);
+    } else {
+      setTextColor(15); // Varsayýlan renk (beyaz)
+      printf(" %c\n", menuOptions[i]);
+    }
+  }
+
+  setTextColor(15); // Varsayýlan rengine geri dön
+  setCursorPosition(x + 15, y + menuSize + 3);
+
+  for (int i = 0; i <= 43; i++) {
+    printf("=");
+  }
+
   return 1;
 }

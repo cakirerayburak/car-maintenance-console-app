@@ -113,7 +113,7 @@ int readUser();
  * @note The system file should exist, and the user structure in the file should follow a specific format.
  * @warning If there is an error opening the file or the specified user is not found, an error message is printed.
  */
-int deletUser(const char *username);
+int deleteUser(const char *username);
 
 
 int updateUser();// kalsin

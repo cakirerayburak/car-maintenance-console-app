@@ -18,7 +18,7 @@ source_group("header" FILES ${LIB_HEADERS})
 source_group("src" FILES ${LIB_SOURCES})
 
 # Set Properties->General->Configuration Type to Dynamic Library (.dll/.so/.dylib)
-add_library(${LIBNAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES} "src/CarMaintenance.cpp") # for dynamic library use SHARED
+add_library(${LIBNAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES} "src/CarMaintenance.cpp"  "header/MainMenu.h") # for dynamic library use SHARED
 
 target_include_directories(${LIBNAME} PUBLIC
 						   ${CMAKE_CURRENT_SOURCE_DIR}/../utility/header
@@ -38,7 +38,6 @@ install(TARGETS ${LIBNAME}
 # Copy required header to the installation include folder		
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/header/CarMaintenance.h
         DESTINATION include)
-
 # Export the crypto target so other modules can use it
 # export(TARGETS ${LIBNAME} FILE ${LIBNAME}Targets.cmake)
 
