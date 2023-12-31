@@ -59,13 +59,13 @@ int main() {
   printf("After deleted PROJECT");
   readProject();
   struct Task task[] = {
-    {"BMW","ebcakiir","motor patladý","karassamet", *zamanString,1},
-    {"Reault","mert","motor yandi","memedali", *zamanString,3}
+    {"BMW","ebcakiir","motor patladi","karassamet",1,*zamanString},
+    {"Reault","mert","motor yandi","memedali", 3 ,*zamanString}
   };
   addTask(task,2);
   readTask();
   updateTaskStatus(task, "ebcakiir", 2);
-  printf("Task status Updated");
+  printf("Task status Updated\n");
   readTask();
   return 0;
 }

@@ -172,44 +172,46 @@ int addProject(Project project[], size_t projectNumber) {
  * @note The file "project.bin" should exist, and the project structure in the file should follow a specific format.
  * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
  */
-int deleteProject(const char *driverName) {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "project.bin", "rb");;
+int deleteProject(const char* driverName) {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "project.bin", "rb+");;
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct Project currentProject;
-
-  long int currentPosition = ftell(fp);
-  int projectFound = 0;
-
-  // Find and delete the user with the specified username
-  while (fread(&currentProject, sizeof(struct Project), 1, fp) == 1) {
-    if (strcmp(currentProject.driverName, driverName) == 0) {
-      projectFound = 1;
-      break;
+    if (err != 0) {
+        // Hata durumunda
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
 
-    currentPosition = ftell(fp);
-  }
+    struct Project currentProject;
 
-  if (!projectFound) {
+    long int currentPosition = ftell(fp);
+    int projectFound = 0;
+
+    // Find and delete the user with the specified username
+    while (fread(&currentProject, sizeof(struct Project), 1, fp) == 1) {
+        if (strcmp(currentProject.driverName, driverName) == 0) {
+            projectFound = 1;
+            break;
+        }
+
+        currentPosition = ftell(fp);
+    }
+
+    if (!projectFound) {
+        fclose(fp);
+        printf("User with username %s not found.\n", driverName);
+        return -1; // User not found
+    }
+
+    // Move the file pointer to the beginning of the user to be deleted
+    fseek(fp, currentPosition, SEEK_SET);
+    // Overwrite the user with null data
+    struct Project nullProject = { 0 };
+    fwrite(&nullProject, sizeof(struct Project), 1, fp);
     fclose(fp);
-    printf("User with Driver Name: %s not found.\n", driverName);
-    return -1; // User not found
-  }
-
-  // Move the file pointer to the beginning of the user to be deleted
-  fseek(fp, currentPosition, SEEK_SET);
-  // Overwrite the user with null data
-  struct Project nullProject = { 0 };
-  fwrite(&nullProject, sizeof(struct Project), 1, fp);
-  fclose(fp);
-  return 1;
+    return 1;
 }
+
 
 /**
  * @brief Reads projects from a file and prints their information.
@@ -284,71 +286,74 @@ int deleteTask() {
   return 0;
 }
 
-int updateTaskStatus(Task task[],const char *driverName,int status) {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "task.bin", "rb");;
+int updateTaskStatus(Task task[], const char* driverName, int statusNew) {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "task.bin", "rb+");
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct Task currentTask;
-
-  long int currentPosition = ftell(fp);
-  int taskFound = 0;
-
-  // Find and delete the user with the specified username
-  while (fread(&currentTask, sizeof(struct Task), 1, fp) == 1) {
-    if (strcmp(currentTask.driverName, driverName) == 0) {
-      taskFound = 1;
-      break;
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
 
-    currentPosition = ftell(fp);
-  }
+    struct Task currentTask;
 
-  if (!taskFound) {
+    long int currentPosition = ftell(fp);
+    int taskFound = 0;
+
+    // Find the task with the specified driverName
+    while (fread(&currentTask, sizeof(struct Task), 1, fp) == 1) {
+        if (strcmp(currentTask.driverName, driverName) == 0) {
+            taskFound = 1;
+            break;
+        }
+
+        currentPosition = ftell(fp);
+    }
+
+    if (!taskFound) {
+        fclose(fp);
+        printf("Task with Driver Name: %s not found.\n", driverName);
+        return -1; // Task not found
+    }
+
+    // Move the file pointer to the beginning of the task to be updated
+    fseek(fp, currentPosition, SEEK_SET);
+
+    // Update the task with null data
+    struct Task nullTask = { 0 };
+    fwrite(&nullTask, sizeof(struct Task), 1, fp);
+
+    // Move the file pointer to the beginning of the task to be updated again
+    fseek(fp, currentPosition, SEEK_SET);
+
+    // Update the task with the new status
+    currentTask.status = statusNew;
+    fwrite(&currentTask, sizeof(struct Task), 1, fp);
+
     fclose(fp);
-    printf("User with Driver Name: %s not found.\n", driverName);
-    return -1; // User not found
-  }
 
-  struct Task tempTask[] = {
-    {*currentTask.brand, *currentTask.driverName, *currentTask.description, *currentTask.assignee, *currentTask.date, status}
-  };
-
-  // Move the file pointer to the beginning of the user to be deleted
-  fseek(fp, currentPosition, SEEK_SET);
-
-  // Overwrite the user with null data
-  struct Project nullProject = { 0 };
-
-  fwrite(&nullProject, sizeof(struct Project), 1, fp);
-
-  fclose(fp);
-
-  addTask(tempTask, 1);
-
-  return 1;
+    return 1;
 }
+
 int readTask() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "task.bin", "rb");;
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "task.bin", "rb");
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct Task task;
-
-  while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
-    if (task.driverName != "") {
-      printf("Brand: %s, Driver Name: %s, Description: %s, Assigne %s, Date: %s,Status: %d\n",task.brand,task.driverName,task.description,task.assignee,task.date,task.status);
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
-  }
 
-  fclose(fp);
-  return 1;
+    struct Task task;
+
+    while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
+        if (strlen(task.driverName) > 0) {
+            printf("Brand: %s, Driver Name: %s, Description: %s, Assignee: %s, Date: %s, Status: %d\n",
+                task.brand, task.driverName, task.description, task.assignee, task.date, task.status);
+        }
+    }
+
+    fclose(fp);
+    return 1;
 }
+

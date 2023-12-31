@@ -33,8 +33,9 @@ struct Task {
   char driverName[50]; /**<Driver Name*/
   char description[100]; /**< Description of the task. */
   char assignee[50]; /**< Assignee of the task. */
-  char date[20]; /**< Date information related to the task. */
   int status; /**< Status of the task. */
+  char date[20]; /**< Date information related to the task. */
+
 };
 
 /**
@@ -158,5 +159,5 @@ int updateProject();
 
 int addTask(struct Task task[],size_t taskNumber);
 int readTask();
-int updateTaskStatus(struct Task task[], const char *driverName, int status);
+int updateTaskStatus(struct Task task[], const char *driverName, int statusNew);
 #endif
