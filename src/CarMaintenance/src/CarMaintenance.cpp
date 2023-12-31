@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include "CarMaintenance.h"
@@ -172,44 +173,44 @@ int addProject(Project project[], size_t projectNumber) {
  * @note The file "project.bin" should exist, and the project structure in the file should follow a specific format.
  * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
  */
-int deleteProject(const char* driverName) {
-    FILE* fp;
-    errno_t err = fopen_s(&fp, "project.bin", "rb+");;
+int deleteProject(const char *driverName) {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "project.bin", "rb+");;
 
-    if (err != 0) {
-        // Hata durumunda
-        printf("Exception While File Opening: %d\n", err);
-        return -1;
+  if (err != 0) {
+    // Hata durumunda
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  struct Project currentProject;
+
+  long int currentPosition = ftell(fp);
+  int projectFound = 0;
+
+  // Find and delete the user with the specified username
+  while (fread(&currentProject, sizeof(struct Project), 1, fp) == 1) {
+    if (strcmp(currentProject.driverName, driverName) == 0) {
+      projectFound = 1;
+      break;
     }
 
-    struct Project currentProject;
+    currentPosition = ftell(fp);
+  }
 
-    long int currentPosition = ftell(fp);
-    int projectFound = 0;
-
-    // Find and delete the user with the specified username
-    while (fread(&currentProject, sizeof(struct Project), 1, fp) == 1) {
-        if (strcmp(currentProject.driverName, driverName) == 0) {
-            projectFound = 1;
-            break;
-        }
-
-        currentPosition = ftell(fp);
-    }
-
-    if (!projectFound) {
-        fclose(fp);
-        printf("User with username %s not found.\n", driverName);
-        return -1; // User not found
-    }
-
-    // Move the file pointer to the beginning of the user to be deleted
-    fseek(fp, currentPosition, SEEK_SET);
-    // Overwrite the user with null data
-    struct Project nullProject = { 0 };
-    fwrite(&nullProject, sizeof(struct Project), 1, fp);
+  if (!projectFound) {
     fclose(fp);
-    return 1;
+    printf("User with username %s not found.\n", driverName);
+    return -1; // User not found
+  }
+
+  // Move the file pointer to the beginning of the user to be deleted
+  fseek(fp, currentPosition, SEEK_SET);
+  // Overwrite the user with null data
+  struct Project nullProject = { 0 };
+  fwrite(&nullProject, sizeof(struct Project), 1, fp);
+  fclose(fp);
+  return 1;
 }
 
 
@@ -247,6 +248,7 @@ int readProject() {
   fclose(fp);
   return 1;
 }
+
 int updateProject() {
   return 0;
 }
@@ -286,74 +288,278 @@ int deleteTask() {
   return 0;
 }
 
-int updateTaskStatus(Task task[], const char* driverName, int statusNew) {
-    FILE* fp;
-    errno_t err = fopen_s(&fp, "task.bin", "rb+");
+/**
+ * @brief Updates the status of a task in the task file.
+ *
+ * This function opens the "task.bin" file and searches for a task with the specified driverName.
+ * If the task is found, its status is updated to the provided statusNew.
+ *
+ * @param task An array of Task structures.
+ * @param driverName The name of the driver whose task status needs to be updated.
+ * @param statusNew The new status to be set for the task.
+ * @return Returns 1 on success, -1 on failure (file opening failure or task not found).
+ *
+ * @warning This function assumes that the "task.bin" file contains binary data of Task structures.
+ * The file should be opened in "rb+" mode for both reading and writing.
+ */
+int updateTaskStatus(Task task[], const char *driverName, int statusNew) {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "task.bin", "rb+");
 
-    if (err != 0) {
-        printf("Exception While File Opening: %d\n", err);
-        return -1;
+  if (err != 0) {
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  struct Task currentTask;
+
+  long int currentPosition = ftell(fp);
+  int taskFound = 0;
+
+  // Find the task with the specified driverName
+  while (fread(&currentTask, sizeof(struct Task), 1, fp) == 1) {
+    if (strcmp(currentTask.driverName, driverName) == 0) {
+      taskFound = 1;
+      break;
     }
 
-    struct Task currentTask;
+    currentPosition = ftell(fp);
+  }
 
-    long int currentPosition = ftell(fp);
-    int taskFound = 0;
-
-    // Find the task with the specified driverName
-    while (fread(&currentTask, sizeof(struct Task), 1, fp) == 1) {
-        if (strcmp(currentTask.driverName, driverName) == 0) {
-            taskFound = 1;
-            break;
-        }
-
-        currentPosition = ftell(fp);
-    }
-
-    if (!taskFound) {
-        fclose(fp);
-        printf("Task with Driver Name: %s not found.\n", driverName);
-        return -1; // Task not found
-    }
-
-    // Move the file pointer to the beginning of the task to be updated
-    fseek(fp, currentPosition, SEEK_SET);
-
-    // Update the task with null data
-    struct Task nullTask = { 0 };
-    fwrite(&nullTask, sizeof(struct Task), 1, fp);
-
-    // Move the file pointer to the beginning of the task to be updated again
-    fseek(fp, currentPosition, SEEK_SET);
-
-    // Update the task with the new status
-    currentTask.status = statusNew;
-    fwrite(&currentTask, sizeof(struct Task), 1, fp);
-
+  if (!taskFound) {
     fclose(fp);
+    printf("Task with Driver Name: %s not found.\n", driverName);
+    return -1; // Task not found
+  }
 
-    return 1;
+  // Move the file pointer to the beginning of the task to be updated
+  fseek(fp, currentPosition, SEEK_SET);
+  // Update the task with null data
+  struct Task nullTask = { 0 };
+  fwrite(&nullTask, sizeof(struct Task), 1, fp);
+  // Move the file pointer to the beginning of the task to be updated again
+  fseek(fp, currentPosition, SEEK_SET);
+  // Update the task with the new status
+  currentTask.status = statusNew;
+  fwrite(&currentTask, sizeof(struct Task), 1, fp);
+  fclose(fp);
+  return 1;
 }
 
+
+/**
+ * @brief Reads and prints task information from the "task.bin" file.
+ *
+ * This function opens the "task.bin" file in read-only mode and prints the information
+ * of each task stored in the file. The information includes brand, driver name, description,
+ * assignee, date, and status. Tasks with an empty driver name are skipped.
+ *
+ * @return Returns 1 on success, -1 on failure (file opening failure).
+ *
+ * @warning This function assumes that the "task.bin" file contains binary data of Task structures.
+ * The file should be opened in "rb" mode for reading.
+ */
 int readTask() {
-    FILE* fp;
-    errno_t err = fopen_s(&fp, "task.bin", "rb");
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "task.bin", "rb");
 
-    if (err != 0) {
-        printf("Exception While File Opening: %d\n", err);
-        return -1;
+  if (err != 0) {
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  struct Task task;
+
+  while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
+    if (strlen(task.driverName) > 0) {
+      printf("Brand: %s, Driver Name: %s, Description: %s, Assignee: %s, Date: %s, Status: %d\n",
+             task.brand, task.driverName, task.description, task.assignee, task.date1, task.status);
     }
+  }
 
-    struct Task task;
-
-    while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
-        if (strlen(task.driverName) > 0) {
-            printf("Brand: %s, Driver Name: %s, Description: %s, Assignee: %s, Date: %s, Status: %d\n",
-                task.brand, task.driverName, task.description, task.assignee, task.date1, task.status);
-        }
-    }
-
-    fclose(fp);
-    return 1;
+  fclose(fp);
+  return 1;
 }
 
+/**
+ * @brief Adds cost information to the "cost.bin" file.
+ *
+ * This function opens the "cost.bin" file in append mode and adds cost information
+ * from the provided Cost array to the end of the file.
+ *
+ * @param cost An array of Cost structures containing the cost information to be added.
+ * @param costNumber The number of elements in the cost array.
+ * @return Returns 1 on success, -1 on failure (file opening failure).
+ *
+ * @warning This function assumes that the "cost.bin" file contains binary data of Cost structures.
+ * The file should be opened in "ab" mode for appending.
+ */
+int addCost(Cost cost[], size_t costNumber) {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "cost.bin", "ab");;
+
+  if (err != 0) {
+    // Hata durumunda
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  for (size_t i = 0; i < costNumber; ++i) {
+    fwrite(&cost[i], sizeof(struct Cost), 1, fp);
+  }
+
+  fclose(fp);
+  return 1;
+}
+
+/**
+ * @brief Reads and prints cost information from the "cost.bin" file.
+ *
+ * This function opens the "cost.bin" file in read-only mode and prints the information
+ * of each cost stored in the file. The information includes brand, driver name, date,
+ * supplier, price, and material. Costs with an empty driver name are skipped.
+ *
+ * @return Returns 1 on success, -1 on failure (file opening failure).
+ *
+ * @warning This function assumes that the "cost.bin" file contains binary data of Cost structures.
+ * The file should be opened in "rb" mode for reading.
+ */
+int readCost() {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "cost.bin", "rb");
+
+  if (err != 0) {
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  struct Cost cost;
+
+  while (fread(&cost, sizeof(struct Cost), 1, fp) == 1) {
+    if (strlen(cost.driverName) > 0) {
+      printf("Brand: %s, Driver Name: %s, Date1: %s, Supplier: %s, Price: %f, Material: %s\n",
+             cost.brand, cost.driverName, cost.date1, cost.supplier, cost.price, cost.material);
+    }
+  }
+
+  fclose(fp);
+  return 1;
+}
+
+/**
+ * @brief Adds supplier information to the "supplier.bin" file.
+ *
+ * This function opens the "supplier.bin" file in append mode and adds supplier information
+ * from the provided Supplier array to the end of the file.
+ *
+ * @param supplier An array of Supplier structures containing the supplier information to be added.
+ * @param supplierNumber The number of elements in the supplier array.
+ * @return Returns 1 on success, -1 on failure (file opening failure).
+ *
+ * @warning This function assumes that the "supplier.bin" file contains binary data of Supplier structures.
+ * The file should be opened in "ab" mode for appending.
+ */
+int addSupplier(Supplier supplier[], size_t supplierNumber) {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "supplier.bin", "ab");;
+
+  if (err != 0) {
+    // Hata durumunda
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  for (size_t i = 0; i < supplierNumber; ++i) {
+    fwrite(&supplier[i], sizeof(struct Supplier), 1, fp);
+  }
+
+  fclose(fp);
+  return 1;
+}
+
+/**
+ * @brief Reads and prints supplier information from the "supplier.bin" file.
+ *
+ * This function opens the "supplier.bin" file in read-only mode and prints the information
+ * of each supplier stored in the file. The information includes supplier name, contact number,
+ * email, and business type. Suppliers with an empty name are skipped.
+ *
+ * @return Returns 1 on success, -1 on failure (file opening failure).
+ *
+ * @warning This function assumes that the "supplier.bin" file contains binary data of Supplier structures.
+ * The file should be opened in "rb" mode for reading.
+ */
+int readSupplier() {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "supplier.bin", "rb");
+
+  if (err != 0) {
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  struct Supplier supplier;
+
+  while (fread(&supplier, sizeof(struct Supplier), 1, fp) == 1) {
+    if (strlen(supplier.supplierName) > 0) {
+      printf("Supplier Name: %s, Contact Number: %s, Email: %s, Bussines Type: %s\n",
+             supplier.supplierName,supplier.contactNumber,supplier.email,supplier.bussinesType);
+    }
+  }
+
+  fclose(fp);
+  return 1;
+}
+
+/**
+ * @brief Deletes a supplier from the "supplier.bin" file based on the supplier name.
+ *
+ * This function opens the "supplier.bin" file in read-write mode and searches for a supplier
+ * with the specified name. If the supplier is found, its data is overwritten with null data,
+ * effectively deleting the supplier.
+ *
+ * @param supplierName The name of the supplier to be deleted.
+ * @return Returns 1 on success, -1 on failure (file opening failure or supplier not found).
+ *
+ * @warning This function assumes that the "supplier.bin" file contains binary data of Supplier structures.
+ * The file should be opened in "rb+" mode for both reading and writing.
+ */
+int deleteSupplier(const char *supplierName) {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "supplier.bin", "rb+");;
+
+  if (err != 0) {
+    // Hata durumunda
+    printf("Exception While File Opening: %d\n", err);
+    return -1;
+  }
+
+  struct Supplier currentSupplier;
+
+  long int currentPosition = ftell(fp);
+  int supplierFound = 0;
+
+  // Find and delete the user with the specified username
+  while (fread(&currentSupplier, sizeof(struct Supplier), 1, fp) == 1) {
+    if (strcmp(currentSupplier.supplierName, supplierName) == 0) {
+      supplierFound = 1;
+      break;
+    }
+
+    currentPosition = ftell(fp);
+  }
+
+  if (!supplierFound) {
+    fclose(fp);
+    printf("User with supplier name %s not found.\n", supplierName);
+    return -1; // User not found
+  }
+
+  // Move the file pointer to the beginning of the user to be deleted
+  fseek(fp, currentPosition, SEEK_SET);
+  // Overwrite the user with null data
+  struct Supplier nullSupplier = { 0 };
+  fwrite(&nullSupplier, sizeof(struct Supplier), 1, fp);
+  fclose(fp);
+  return 1;
+}

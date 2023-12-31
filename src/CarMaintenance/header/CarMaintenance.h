@@ -1,6 +1,18 @@
-#ifndef CARMAINTENANCE_H
-#define CARMAINTENANCE_H
+/**
+ * @file CarMaintenance.h
+ * @brief Header file for Car Maintenance application.
+ *
+ * This file contains the declarations for functions and data structures
+ * used in the Car Maintenance application.
+ */
 
+#ifndef CAR_MAINTENANCE_H
+#define CAR_MAINTENANCE_H
+
+/**
+ * @struct Task
+ * @brief Represents a task in the Car Maintenance application.
+ */
 
 /**
  * @brief Represents a user in the system.
@@ -22,7 +34,7 @@ struct Project {
   int driverPhone; /**< Phone number of the driver. */
   int kilometer; /**< Kilometer information of the project. */
   bool status; /**< Status of the project. */
-  char* date1[40]; /**< Date information related to the project. */
+  char date1[40]; /**< Date information related to the project. */
 };
 
 /**
@@ -34,12 +46,13 @@ struct Task {
   char description[100]; /**< Description of the task. */
   char assignee[50]; /**< Assignee of the task. */
   int status; /**< Status of the task. */
-  char *date1[40]; /**< Date information related to the task. */
+  char date1[40]; /**< Date information related to the task. */
 
 };
 
 /**
- * @brief Represents a cost associated with a project.
+ * @struct Cost
+ * @brief Represents a cost in the Car Maintenance application.
  */
 struct Cost {
   char brand[30]; /**< Brand associated with the cost. */
@@ -48,7 +61,7 @@ struct Cost {
   char supplier[52]; /**< Supplier of the material or service. */
   float price; /**< Price of the material or service. */
   char material[100]; /**< Material or service description. */
-  
+
 };
 
 /**
@@ -56,7 +69,7 @@ struct Cost {
  */
 struct Supplier {
   char supplierName[50]; /**< Name of the supplier. */
-  char contactNumber[10]; /**< Contact number of the supplier. */
+  char contactNumber[15]; /**< Contact number of the supplier. */
   char email[30]; /**< Email address of the supplier. */
   char bussinesType[25]; /**< Business type of the supplier. */
 };
@@ -158,17 +171,87 @@ int deleteProject(const char *driverName);
  */
 int updateProject();
 
+/**
+ * @brief Adds a task to the task array.
+ *
+ * This function adds a task to the provided task array.
+ *
+ * @param task An array of Task structures.
+ * @param taskNumber The number of tasks in the array.
+ * @return Returns 0 on success, -1 on failure.
+ */
 int addTask(struct Task task[],size_t taskNumber);
+
+/**
+ * @brief Reads a task.
+ *
+ * This function reads a task.
+ *
+ * @return Returns 0 on success, -1 on failure.
+ */
 int readTask();
+
+/**
+ * @brief Updates the status of a task based on the driver's name.
+ *
+ * This function updates the status of a task in the provided task array
+ * based on the driver's name.
+ *
+ * @param task An array of Task structures.
+ * @param driverName The name of the driver.
+ * @param statusNew The new status to be set.
+ * @return Returns 0 on success, -1 on failure.
+ */
 int updateTaskStatus(struct Task task[], const char *driverName, int statusNew);
 
+/**
+ * @brief Adds a cost to the cost array.
+ *
+ * This function adds a cost to the provided cost array.
+ *
+ * @param cost An array of Cost structures.
+ * @param costNumber The number of costs in the array.
+ * @return Returns 0 on success, -1 on failure.
+ */
 int addCost(struct Cost cost[], size_t costNumber);
-int readTask();
 
+/**
+ * @brief Reads a cost.
+ *
+ * This function reads a cost.
+ *
+ * @return Returns 0 on success, -1 on failure.
+ */
+int readCost();
 
+/**
+ * @brief Adds a supplier to the supplier array.
+ *
+ * This function adds a supplier to the provided supplier array.
+ *
+ * @param supplier An array of Supplier structures.
+ * @param supplierNumber The number of suppliers in the array.
+ * @return Returns 0 on success, -1 on failure.
+ */
+int addSupplier(struct Supplier supplier[], size_t supplierNumber);
 
+/**
+ * @brief Reads a supplier.
+ *
+ * This function reads a supplier.
+ *
+ * @return Returns 0 on success, -1 on failure.
+ */
+int readSupplier();
 
-
-
-
+/**
+ * @brief Deletes a supplier based on the supplier's name.
+ *
+ * This function deletes a supplier from the provided supplier array
+ * based on the supplier's name.
+ *
+ * @param supplierName The name of the supplier to be deleted.
+ * @return Returns 0 on success, -1 on failure.
+ */
+int deleteSupplier(const char *supplierName);
 #endif
