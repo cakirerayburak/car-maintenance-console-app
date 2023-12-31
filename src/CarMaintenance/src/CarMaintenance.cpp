@@ -240,7 +240,7 @@ int readProject() {
     if (project.kilometer != 0) {
       printf("Brand: %s, Year: %d, Action: %s, Driver Name: %s, Driver Phone: %d, Kilometer: %d, Date: %s,Durum: %d\n",
              project.brand, project.year, project.action, project.driverName, project.driverPhone,
-             project.kilometer, project.date,project.status);
+             project.kilometer, project.date1,project.status);
     }
   }
 
@@ -349,7 +349,7 @@ int readTask() {
     while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
         if (strlen(task.driverName) > 0) {
             printf("Brand: %s, Driver Name: %s, Description: %s, Assignee: %s, Date: %s, Status: %d\n",
-                task.brand, task.driverName, task.description, task.assignee, task.date, task.status);
+                task.brand, task.driverName, task.description, task.assignee, task.date1, task.status);
         }
     }
 

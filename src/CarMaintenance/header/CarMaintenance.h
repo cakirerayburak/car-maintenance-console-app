@@ -22,8 +22,7 @@ struct Project {
   int driverPhone; /**< Phone number of the driver. */
   int kilometer; /**< Kilometer information of the project. */
   bool status; /**< Status of the project. */
-  char date[40]; /**< Date information related to the project. */
-  
+  char* date1[40]; /**< Date information related to the project. */
 };
 
 /**
@@ -35,7 +34,7 @@ struct Task {
   char description[100]; /**< Description of the task. */
   char assignee[50]; /**< Assignee of the task. */
   int status; /**< Status of the task. */
-  char date[40]; /**< Date information related to the task. */
+  char *date1[40]; /**< Date information related to the task. */
 
 };
 
@@ -45,7 +44,7 @@ struct Task {
 struct Cost {
   char brand[30]; /**< Brand associated with the cost. */
   char driverName[50]; /**< Driver name associated with the cost. */
-  char date[40]; /**< Date information related to the cost. */
+  char date1[40]; /**< Date information related to the cost. */
   char supplier[52]; /**< Supplier of the material or service. */
   float price; /**< Price of the material or service. */
   char material[100]; /**< Material or service description. */

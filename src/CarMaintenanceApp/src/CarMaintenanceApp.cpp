@@ -6,8 +6,12 @@
 int main() {
     time_t currentTime = time(nullptr);
     struct tm* tmStruct = localtime(&currentTime);
-    char date[40];
+    char date[40];  // Yeterli boyutta bir karakter dizisi seçin
+
     strftime(date, sizeof(date), "%Y-%m-%d %H:%M", tmStruct);
+
+    
+   
 
     printf("%s", date);
 
