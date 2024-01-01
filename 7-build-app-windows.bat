@@ -87,11 +87,11 @@ echo Generate Test Coverage Data for CarMaintenance
 call OpenCppCoverage.exe --export_type=binary:CarMaintenance_tests_unit_win.cov --sources src\CarMaintenance\src --sources src\CarMaintenance\header --sources src\tests\CarMaintenance -- build_win\build\Debug\CarMaintenance_tests.exe
 
 echo Generate Test Coverage Data for CarMaintenance App and Combine Results
-call OpenCppCoverage.exe --input_coverage=utility_tests_unit_win.cov --input_coverage=CarMaintenance_tests_unit_win.cov --export_type=cobertura:CarMaintenanceapp_unit_win_cobertura.xml --sources src\utility\src --sources src\utility\header --sources src\CarMaintenance\src --sources src\CarMaintenance\header --sources src\CarMaintenanceapp\src --sources src\CarMaintenanceapp\header --sources src\tests\utility --sources src\tests\CarMaintenance -- build_win\build\Debug\CarMaintenanceapp.exe
+call OpenCppCoverage.exe --input_coverage=utility_tests_unit_win.cov --input_coverage=CarMaintenance_tests_unit_win.cov --export_type=cobertura:CarMaintenanceApp_unit_win_cobertura.xml --sources src\utility\src --sources src\utility\header --sources src\CarMaintenance\src --sources src\CarMaintenance\header --sources src\CarMaintenanceApp\src --sources src\CarMaintenanceApp\header --sources src\tests\utility --sources src\tests\CarMaintenance -- build_win\build\Debug\CarMaintenanceApp.exe
 
 echo Generate Unit Test Coverage Report
-call reportgenerator "-title:CarMaintenance Library Unit Test Coverage Report (Windows)" "-targetdir:docs/coveragereportlibwin" "-reporttypes:Html" "-reports:**/CarMaintenanceapp_unit_win_cobertura.xml" "-sourcedirs:src/utility/src;src/utility/header;src/CarMaintenance/src;src/CarMaintenance/header;src/CarMaintenanceapp/src;src/CarMaintenanceapp/header;src/tests/utility;src/tests/CarMaintenance" "-filefilters:-*minkernel\*;-*gtest*;-*a\_work\*;-*gtest-*;-*gtest.cc;-*gtest.h;-*build*" "-historydir:report_test_hist_win"
-call reportgenerator "-targetdir:assets/codecoveragelibwin" "-reporttypes:Badges" "-reports:**/CarMaintenanceapp_unit_win_cobertura.xml" "-sourcedirs:src/utility/src;src/utility/header;src/CarMaintenance/src;src/CarMaintenance/header;src/CarMaintenanceapp/src;src/CarMaintenanceapp/header;src/tests/utility;src/tests/CarMaintenance" "-filefilters:-*minkernel\*;-*gtest*;-*a\_work\*;-*gtest-*;-*gtest.cc;-*gtest.h;-*build*"
+call reportgenerator "-title:CarMaintenance Library Unit Test Coverage Report (Windows)" "-targetdir:docs/coveragereportlibwin" "-reporttypes:Html" "-reports:**/CarMaintenanceApp_unit_win_cobertura.xml" "-sourcedirs:src/utility/src;src/utility/header;src/CarMaintenance/src;src/CarMaintenance/header;src/CarMaintenanceApp/src;src/CarMaintenanceApp/header;src/tests/utility;src/tests/CarMaintenance" "-filefilters:-*minkernel\*;-*gtest*;-*a\_work\*;-*gtest-*;-*gtest.cc;-*gtest.h;-*build*" "-historydir:report_test_hist_win"
+call reportgenerator "-targetdir:assets/codecoveragelibwin" "-reporttypes:Badges" "-reports:**/CarMaintenanceApp_unit_win_cobertura.xml" "-sourcedirs:src/utility/src;src/utility/header;src/CarMaintenance/src;src/CarMaintenance/header;src/CarMaintenanceApp/src;src/CarMaintenanceApp/header;src/tests/utility;src/tests/CarMaintenance" "-filefilters:-*minkernel\*;-*gtest*;-*a\_work\*;-*gtest-*;-*gtest.cc;-*gtest.h;-*build*"
 
 echo Copy the "assets" folder and its contents to "docs" recursively
 call robocopy assets "docs\assets" /E
@@ -125,13 +125,13 @@ tar -czvf release_win\windows-publish-binaries.tar.gz -C publish_win .
 echo Package Publish Windows Binaries
 call robocopy src\utility\header "build_win\build\Release" /E
 call robocopy src\CarMaintenance\header "build_win\build\Release" /E
-call robocopy src\CarMaintenanceapp\header "build_win\build\Release" /E
+call robocopy src\CarMaintenanceApp\header "build_win\build\Release" /E
 tar -czvf release_win\windows-release-binaries.tar.gz -C build_win\build\Release .
 
 echo Package Publish Debug Windows Binaries
 call robocopy src\utility\header "build_win\build\Debug" /E
 call robocopy src\CarMaintenance\header "build_win\build\Debug" /E
-call robocopy src\CarMaintenanceapp\header "build_win\build\Debug" /E
+call robocopy src\CarMaintenanceApp\header "build_win\build\Debug" /E
 tar -czvf release_win\windows-debug-binaries.tar.gz -C build_win\build\Debug .
 
 echo Package Publish Test Coverage Report

@@ -33,7 +33,7 @@ echo Running Test Executable
 
 call .\publish_win\bin\utility_tests.exe
 call .\publish_win\bin\CarMaintenance_tests.exe
-call .\publish_win\bin\CarMaintenanceapp.exe
+call .\publish_win\bin\CarMaintenanceApp.exe
 
 echo Files and folders copied successfully.
 
@@ -43,13 +43,13 @@ tar -czvf release\windows-publish-binaries.tar.gz -C publish .
 echo Package Publish Windows Binaries
 call robocopy src\utility\header "build_win\build\Release" /E
 call robocopy src\CarMaintenance\header "build_win\build\Release" /E
-call robocopy src\CarMaintenanceapp\header "build_win\build\Release" /E
+call robocopy src\CarMaintenanceApp\header "build_win\build\Release" /E
 tar -czvf release_win\windows-release-binaries.tar.gz -C build_win\build\Release .
 
 echo Package Publish Debug Windows Binaries
 call robocopy src\utility\header "build_win\build\Debug" /E
 call robocopy src\CarMaintenance\header "build_win\build\Debug" /E
-call robocopy src\CarMaintenanceapp\header "build_win\build\Debug" /E
+call robocopy src\CarMaintenanceApp\header "build_win\build\Debug" /E
 tar -czvf release_win\windows-debug-binaries.tar.gz -C build_win\build\Debug .
 
 echo ....................
