@@ -1,8 +1,11 @@
-/**
+﻿/**
  * @file CarMaintenance.h
  * @brief Declarations and definitions for the Car Maintenance application.
  */
 #define _CRT_SECURE_NO_WARNINGS
+#define MAX_USERNAME_LENGTH 50
+#define MAX_PASSWORD_LENGTH 50
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "CarMaintenance.h"
@@ -11,6 +14,9 @@
 #include <windows.h>
 #include "MainMenu.h"
 
+
+const char Username[] = "admin";
+const char Password[] = "123";
 
 /**
  * @brief Width of the screen.
@@ -35,7 +41,7 @@ const char *loginMenu[] = {
   "           Guest Mod           "
 };
 
-const char *authenticetedOptions[] = {
+const char *authenticatedOptions[] = {
   "   Project and Budget Planning  ",
   "  Task Assignment and Tracking  ",
   "   Cost Analysis and Reporting  ",
@@ -71,7 +77,16 @@ const char *supplierOptions[] = {
   "           Add Supplier         ",
   "          Edit Supplier         ",
   "         Delete Supplier        ",
+  "         View Suppliers         ",
   "       Return to Main Menu      "
+};
+
+const char* guestOption[] = {
+  "          View Project          ",
+  "          View Tasks            ",
+  "          View Expenses         ",
+  "         View Suppliers         ",
+  "      Return to Login Menu      "
 };
 
 /**
@@ -636,12 +651,12 @@ int deleteSupplier(const char *supplierName) {
 
 int setCursorPosition(int x, int y) {
   if (x < 1 || y < 1) {
-    // Koordinatlar ge�ersizse hata kodu d�nd�r
+    // Koordinatlar geçersizse hata kodu döndür
     return -1;
   }
 
   fprintf(stdout, "\033[%d;%dH", y, x);
-  // Ba�ar� durumunda 0 d�nd�r
+  // Baþarý durumunda 0 döndür
   return 0;
 }
 
@@ -656,6 +671,7 @@ int setBackgorundColor(int backgroundColor) {
 }
 
 
+int guestMode = 0;
 
 
 int mainMenu() {
@@ -664,45 +680,205 @@ int mainMenu() {
   int y = 10;
 
   while (0 == 0) {
-    displayMenu(*loginMenu, selectedOption, 6, x, y);
+    displayMenu(loginMenu, selectedOption, 3, x, y);
     char key = _getch();
 
     if (key == 72 && selectedOption >= 0) {
       if (selectedOption == 0) {
-        selectedOption = 5;
+        selectedOption = 2;
       } else {
         selectedOption--;
       }
-    } else if (key == 80 && selectedOption <= 5) {
-      if (selectedOption == 5) {
+    } else if (key == 80 && selectedOption <= 2) {
+      if (selectedOption == 2) {
         selectedOption = 0;
       } else {
         selectedOption++;
       }
     } else if (key == 13) {
       if (selectedOption == 0) {
-        if (false) {
-          //loginMenu()) {
-          //materialManagementMenu();
-        }
-      } else if (selectedOption == 5) {
-        break;
+          if (login()) {
+              authenticatedMenu();
+          }
+
+        
+      
       } else if (selectedOption == 1) {
-        //stockControlMenu();
+          
+        //Register Menu
       } else if (selectedOption == 2) {
-        //warehouseOptimizationMenu();
-      } else if (selectedOption == 3) {
-        //reportingMenu();
-      } else if (selectedOption == 4) {
-        //integrationMenu();
-      }
+          guestMode = 1;
+          guestMenu();
+      }     
     }
   }
 
   return 1;
 }
 
-int displayMenu(const char *menuOptions, int selectedOption, int menuSize, int x, int y) {
+
+int authenticatedMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (0 == 0) {
+        displayMenu(authenticatedOptions, selectedOption, 6, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 5;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 5) {
+            if (selectedOption == 5) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            if (selectedOption == 0) {
+                setBackgorundColor(1);
+            }
+            else if (selectedOption == 1) {
+                setBackgorundColor(2);
+            }
+            else if (selectedOption == 2) {
+                setBackgorundColor(3);
+            }
+            else if (selectedOption == 3) {
+                setBackgorundColor(4);
+            }
+            else if (selectedOption == 4) {
+                setBackgorundColor(5);
+            }
+            else if (selectedOption == 5) {
+                setBackgorundColor(6);
+            }
+        }
+    }
+
+    return 1;
+}
+
+int guestMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (0 == 0) {
+        displayMenu(guestOption, selectedOption, 5, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 4;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 4) {
+            if (selectedOption == 4) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            if (selectedOption == 0) {
+                setBackgorundColor(1);
+            }
+            else if (selectedOption == 1) {
+                setBackgorundColor(2);
+            }
+            else if (selectedOption == 2) {
+                setBackgorundColor(3);
+            }
+            else if (selectedOption == 3) {
+                setBackgorundColor(4);
+            }
+            else if (selectedOption == 4) {
+                setBackgorundColor(5);
+            }
+        }
+    }
+
+    return 1;
+
+
+}
+
+int projectMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (0 == 0) {
+        displayMenu(projectOptions, selectedOption, 5, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 4;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 4) {
+            if (selectedOption == 4) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            if (selectedOption == 0) {
+                setBackgorundColor(1);
+            }
+            else if (selectedOption == 1) {
+                setBackgorundColor(2);
+            }
+            else if (selectedOption == 2) {
+                setBackgorundColor(3);
+            }
+            else if (selectedOption == 3) {
+                setBackgorundColor(4);
+            }
+            else if (selectedOption == 4) {
+                setBackgorundColor(5);
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+int displayMenu(const char **menuOptions, int selectedOption, int menuSize, int x, int y) {
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   system("cls");
   setCursorPosition(x + 15, y);
@@ -712,7 +888,7 @@ int displayMenu(const char *menuOptions, int selectedOption, int menuSize, int x
   }
 
   setCursorPosition(x + 20, y + 1);
-  printf("Warehouse Management System Menu");
+  printf("     Car Maintenance System     ");
   setCursorPosition(x + 15, y + 2);
 
   for (int i = 0; i <= 43; i++) {
@@ -723,15 +899,15 @@ int displayMenu(const char *menuOptions, int selectedOption, int menuSize, int x
     setCursorPosition(x + 22, y + 3 + i);
 
     if (i == selectedOption) {
-      setTextColor(10); // 12 numaral� renk kodu k�rm�z� renktir
-      printf("> %c <\n", menuOptions[i]);
+      setTextColor(10); // 12 numaralý renk kodu kýrmýzý renktir
+      printf("> %s <\n", menuOptions[i]);
     } else {
-      setTextColor(15); // Varsay�lan renk (beyaz)
-      printf(" %c\n", menuOptions[i]);
+      setTextColor(15); // Varsayýlan renk (beyaz)
+      printf(" %s\n", menuOptions[i]);
     }
   }
 
-  setTextColor(15); // Varsay�lan rengine geri d�n
+  setTextColor(15); // Varsayýlan rengine geri dön
   setCursorPosition(x + 15, y + menuSize + 3);
 
   for (int i = 0; i <= 43; i++) {
@@ -740,3 +916,138 @@ int displayMenu(const char *menuOptions, int selectedOption, int menuSize, int x
 
   return 1;
 }
+
+
+
+
+int login() 
+{
+    char enteredUsername[30];
+    char enteredPassword[30];
+    
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    system("cls");
+
+    
+
+    int loginAttempts = 0;
+    const int maxLoginAttempts = 3;
+    setCursorPosition(x + 20, y + 7);
+    printf("%.*s\n", 29, "=============================");
+    setCursorPosition(x + 20, y + 8);
+    printf("=%.*s=\n", 27, "                           ");
+    setCursorPosition(x + 20, y + 9);
+    printf("%.*s\n", 29, "=============================");
+    setCursorPosition(x + 20, y + 10);
+    printf("=%.*s=\n", 27, "                           ");
+    setCursorPosition(x + 20, y + 11);
+    printf("=%.*s=\n", 27, "                           ");
+    setCursorPosition(x + 20, y + 12);
+    printf("%.*s\n", 29, "=============================");
+
+    while (loginAttempts < maxLoginAttempts) {
+        setCursorPosition(x + 26, y + 8);
+        printf(" -- LOGIN PAGE -- ");
+        setCursorPosition(x + 21, y + 10);
+        printf(" User name: ");
+        scanf("%s", enteredUsername);
+        setCursorPosition(x + 21, y + 11);
+        printf(" Password: ");
+        char* enteredPassword = getPassword(); // getPassword iþlevini çağır
+
+        if (strlen(enteredUsername) == strlen(Username) && strcmp(enteredUsername, Username) == 0 &&
+            strlen(enteredPassword) == strlen(Password) && strcmp(enteredPassword, Password) == 0) {
+
+            setCursorPosition(x + 20, y + 13);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+            printf("             Access             \n");
+            Sleep(1000);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+            return true;
+        }
+        else {
+            loginAttempts++;
+            setCursorPosition(x + 20, y + 13);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+            printf("Not Access (%d/%d attempts)\n", loginAttempts, maxLoginAttempts);
+            Sleep(750);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+
+            if (loginAttempts < maxLoginAttempts) {
+                setCursorPosition(x + 20, y + 7);
+                printf("%.*s\n", 29, "=============================");
+                setCursorPosition(x + 20, y + 8);
+                printf("=%.*s=\n", 27, "                           ");
+                setCursorPosition(x + 20, y + 9);
+                printf("%.*s\n", 29, "=============================");
+                setCursorPosition(x + 20, y + 10);
+                printf("=%.*s=\n", 27, "                           ");
+                setCursorPosition(x + 20, y + 11);
+                printf("=%.*s=\n", 27, "                           ");
+                setCursorPosition(x + 20, y + 12);
+                printf("%.*s\n", 29, "=============================");
+            }
+            else {
+                setCursorPosition(x + 20, y + 15);
+                printf("Max login attempts reached. Exiting...\n");
+                Sleep(1500);
+                exit(0);
+            }
+        }
+    }
+
+    return false;
+}
+
+
+
+
+
+
+char* getPassword() {
+    char password[30];
+    char ch;
+    int index = 0;
+
+    while (1) {
+        ch = _getch();
+
+        if (ch == 13) {
+            break;
+        }
+
+        password[index++] = ch;
+
+        if (index == 30 - 1) {
+            // Parola uzunluğu 30 karakteri geçerse çık
+            break;
+        }
+
+        printf("*");
+    }
+
+    printf("\n");
+
+    // Bu satırı ekleyerek karakter dizisinin sonuna null karakterini ekleyin.
+    password[index] = '\0';
+
+    // Karakter dizisinin dinamik bellekte saklanması için yeniden ayırın
+    char* result = _strdup(password);
+
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

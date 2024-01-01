@@ -32,7 +32,7 @@ enum ConsoleColor {
 
 
 int mainMenu();
-int displayMenu(const char *menuOptions, int selectedOption, int menuSize, int x, int y);
+int displayMenu(const char **menuOptions, int selectedOption, int menuSize, int x, int y);
 int setCursorPosition(int x, int y);
 
 /**
@@ -46,6 +46,13 @@ int setTextColor(enum ConsoleColor color);
  * @param backgroundColor The desired background color.
  */
 int setBackgroundColor(enum ConsoleColor backgroundColor);
+
+char* getPassword();
+int login();
+int authenticatedMenu();
+int guestMenu();
+int projectMenu();
+
 
 
 

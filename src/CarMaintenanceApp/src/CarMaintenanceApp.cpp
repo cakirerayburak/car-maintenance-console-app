@@ -437,7 +437,7 @@ int main() {
     return 0;
   }
 
-  #pragma region Login
+  #pragma region Login 
   bool Display::login() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     system("cls");
