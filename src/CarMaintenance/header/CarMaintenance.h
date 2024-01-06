@@ -20,7 +20,7 @@
 struct User {
   char username[50]; /**< Username of the user. */
   int password; /**< Password of the user. */
-  bool status; /**< Status of the user. */
+  int status; /**< Status of the user. */
 };
 
 /**
@@ -33,7 +33,7 @@ struct Project {
   char driverName[50]; /**< Name of the driver associated with the project. */
   int driverPhone; /**< Phone number of the driver. */
   int kilometer; /**< Kilometer information of the project. */
-  bool status; /**< Status of the project. */
+  int status; /**< Status of the project. */
   char date1[40]; /**< Date information related to the project. */
 };
 
@@ -87,7 +87,7 @@ struct Supplier {
  * @note The file name and user information should follow a specific structure.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int addUser(struct User users[],size_t userNumber);
+int addUser();
 
 /**
  * @brief Reads users from the system and prints their information.
@@ -131,7 +131,7 @@ int updateUser();// kalsin
  * @note The file name and project information should follow a specific structure.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int addProject(struct Project project[],size_t projectNumber);
+int addProject();
 
 /**
  * @brief Reads projects from the system and prints their information.

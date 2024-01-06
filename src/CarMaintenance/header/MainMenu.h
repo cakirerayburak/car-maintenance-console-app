@@ -47,11 +47,17 @@ int setTextColor(enum ConsoleColor color);
  */
 int setBackgroundColor(enum ConsoleColor backgroundColor);
 
-char* getPassword();
+int authenticateUser(const char* enteredUsername);
+int getPassword();
 int login();
 int authenticatedMenu();
 int guestMenu();
 int projectMenu();
+int taskMenu();
+int costMenu();
+int supplierMenu();
+
+
 
 
 

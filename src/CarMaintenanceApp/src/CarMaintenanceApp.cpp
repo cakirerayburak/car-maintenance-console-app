@@ -27,7 +27,7 @@ int main() {
     "   Project and Budget Planning  ",
     "  Task Assignment and Tracking  ",
     "   Cost Analysis and Reporting  ",
-    "Supplier and Contractor Database",
+    "      Supplier and Database     ",
     "         Integrations           ",
     "             Exit               "
   };

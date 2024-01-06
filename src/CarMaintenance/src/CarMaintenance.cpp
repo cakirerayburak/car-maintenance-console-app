@@ -11,12 +11,18 @@
 #include "CarMaintenance.h"
 #include <string.h>
 #include <conio.h>
+#include <iostream>
+#include <fstream>
 #include <windows.h>
 #include "MainMenu.h"
 
 
 const char Username[] = "admin";
 const char Password[] = "123";
+
+
+
+
 
 /**
  * @brief Width of the screen.
@@ -101,23 +107,51 @@ const char* guestOption[] = {
  * @note The file name and user information should follow a specific structure.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int addUser(struct User users[],size_t userNumber) {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "login.bin", "ab");;
+int addUser() {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "login.bin", "ab");
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
 
-  for(size_t i = 0; i < userNumber; ++i) {
-    fwrite(&users[i], sizeof(struct User), 1, fp);
-  }
+    struct User users;
 
-  fclose(fp);
-  //fwrite(users, sizeof(struct User), 1, fp);
-  //fclose(fp);
-  return 1;
+    int x = 30;
+    int y = 10;
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("           Add User            ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 22, y + 3);
+    printf("Username:");
+    setCursorPosition(x + 31, y + 3);
+    scanf("%s", users.username);
+
+    setCursorPosition(x + 22, y + 4);
+    printf("Password:");
+    setCursorPosition(x + 31, y + 4);
+    scanf("%d", &users.password);  // Use %d to read an integer
+
+    users.status = 0;
+
+    fwrite(&users, sizeof(struct User), 1, fp);
+
+    fclose(fp);
+    return 1;
 }
 
 /**
@@ -226,22 +260,105 @@ int updateUser() {
  * @note The file name and project information should follow a specific structure.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int addProject(Project project[], size_t projectNumber) {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "project.bin", "ab");
+int addProject() {
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
+      FILE *fp;
+      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+      errno_t err = fopen_s(&fp, "project.bin", "ab");
+
+      time_t currentTime = time(nullptr);
+      struct tm* tmStruct = localtime(&currentTime);
+      char date[40];  // Yeterli boyutta bir karakter dizisi seçin
+      strftime(date, sizeof(date), "%Y-%m-%d %H:%M", tmStruct);
+
+      if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+      }
+
+      struct Project projects;
+
+      int x = 30;
+      int y = 5;
+
+
+      system("cls");
+
+      setCursorPosition(x + 15, y);
+      for (int i = 0; i <= 43; i++) {
+          printf("=");
+      }
+
+      setCursorPosition(x + 20, y + 1);
+      printf("        Create Project          ");
+      setCursorPosition(x + 15, y + 2);                                                         
+
+      for (int i = 0; i <= 43; i++) {
+          printf("=");
+      }
+
+
+
+      setCursorPosition(x + 22, y + 3);
+      printf("Car's Brand:");
+      setCursorPosition(x + 34, y + 3);
+      scanf(" %[^\n]", projects.brand);
+      fflush(stdin);
+      
+
+      setCursorPosition(x + 22, y + 4);
+      printf("Car's Model Year:");
+      setCursorPosition(x + 40, y + 4);
+      scanf("%d", &projects.year);  // Use %d to read an integer
+      fflush(stdin);
+
+
+      setCursorPosition(x + 22, y + 5);
+      printf("What To Do:");
+      setCursorPosition(x + 34, y + 5);
+      scanf(" %[^\n]", projects.action);
+      fflush(stdin);
+
+
+      setCursorPosition(x + 22, y + 6);
+      printf("Driver Name:");
+      setCursorPosition(x + 35, y + 6);
+      scanf(" %[^\n]", projects.driverName);
+      fflush(stdin);
+
+
+      setCursorPosition(x + 22, y + 7);
+      printf("Driver Phone:");
+      setCursorPosition(x + 36, y + 7);
+      scanf("%d", &projects.driverPhone);
+      fflush(stdin);
+
+
+      setCursorPosition(x + 22, y + 8);
+      printf("Kilometer:");
+      setCursorPosition(x + 33, y + 8);
+      scanf("%d", &projects.kilometer);
+      fflush(stdin);
+
+      projects.status = 0;
+      strcpy(projects.date1, date);
+      
+
+      fwrite(&projects, sizeof(struct Project), 1, fp);
+
+      setCursorPosition(x + 25, y + 9);
+      SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+      printf("Project Added Successfully");
+      Sleep(2000);
+      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+      
+
+      fclose(fp);
+      return 1;
+
+
   }
 
-  for (size_t i = 0; i < projectNumber; ++i) {
-    fwrite(&project[i], sizeof(struct Project), 1, fp);
-  }
-
-  fclose(fp);
-  return 1;
-}
 
 
 /**
@@ -314,21 +431,100 @@ int deleteProject(const char *driverName) {
 int readProject() {
   FILE *fp;
   errno_t err = fopen_s(&fp, "project.bin", "rb+");;
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
   if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
+      printf("Exception While File Opening: %d\n", err);
+      return -1;
   }
 
   struct Project project;
 
-  while (fread(&project, sizeof(struct Project), 1, fp) == 1) {
-    if (project.kilometer != 0) {
-      printf("Brand: %s, Year: %d, Action: %s, Driver Name: %s, Driver Phone: %d, Kilometer: %d, Date: %s,Durum: %d\n",
-             project.brand, project.year, project.action, project.driverName, project.driverPhone,
-             project.kilometer, project.date1,project.status);
-    }
+  int x = 30;
+  int y = 5;
+
+
+  system("cls");
+
+  setCursorPosition(x + 15, y);
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
   }
+
+  setCursorPosition(x + 20, y + 1);
+  printf("         View Project           ");
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+  char driverName[30];
+  setCursorPosition(x + 22, y + 3);
+  printf("Driver's Name:");
+  setCursorPosition(x + 37, y + 3);
+  scanf(" %[^\n]", driverName);
+  fflush(stdin);
+
+  while (fread(&project, sizeof(struct Project), 1, fp) == 1) {
+      
+
+      if (strcmp(driverName, project.driverName)==0) {
+
+
+              system("cls");
+
+              setCursorPosition(x + 15, y);
+              for (int i = 0; i <= 43; i++) {
+                  printf("=");
+              }
+
+              setCursorPosition(x + 20, y + 1);
+              printf("         View Project           ");
+              setCursorPosition(x + 15, y + 2);
+
+              for (int i = 0; i <= 43; i++) {
+                  printf("=");
+              }
+
+              setCursorPosition(x + 22, y + 3);
+              printf("Driver Name: %s", project.driverName);
+              setCursorPosition(x + 22, y + 4);
+              printf("Driver Phone: %d", project.driverPhone);
+              setCursorPosition(x + 22, y + 5);
+              printf("Car's Brand: %s", project.brand);
+              setCursorPosition(x + 22, y + 6);
+              printf("Model Year: %d", project.year);
+              setCursorPosition(x + 22, y + 7);
+              printf("What To Do: %s", project.action);
+              setCursorPosition(x + 22, y + 8);
+              printf("Car's Kilometer: %d", project.kilometer);
+              setCursorPosition(x + 22, y + 9);
+              printf("Date Added: %s", project.date1);
+
+              int status = project.status;
+              if (status == 0) {
+                  setCursorPosition(x + 22, y + 10);
+                  SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+                  printf("Waiting For Repair");
+              }
+              if (status == 1) {
+                  setCursorPosition(x + 22, y + 10);
+                  SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+                  printf("Repairing...");
+              }
+              if (status == 2) {
+                  setCursorPosition(x + 22, y + 10);
+                  SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+                  printf("Finished!");
+              }
+              
+              strcpy(driverName, "");
+              SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+              _getch();
+      }
+  }
+
+  
 
   fclose(fp);
   return 1;
@@ -704,8 +900,10 @@ int mainMenu() {
         
       
       } else if (selectedOption == 1) {
-          
-        //Register Menu
+          if (addUser()) {
+              printf("User Added Succesfully");
+              continue;
+          }
       } else if (selectedOption == 2) {
           guestMode = 1;
           guestMenu();
@@ -745,22 +943,22 @@ int authenticatedMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
-                setBackgorundColor(1);
+                projectMenu();
             }
             else if (selectedOption == 1) {
-                setBackgorundColor(2);
+                taskMenu();
             }
             else if (selectedOption == 2) {
-                setBackgorundColor(3);
+                costMenu();
             }
             else if (selectedOption == 3) {
-                setBackgorundColor(4);
+                supplierMenu();
             }
             else if (selectedOption == 4) {
                 setBackgorundColor(5);
             }
             else if (selectedOption == 5) {
-                setBackgorundColor(6);
+                break;
             }
         }
     }
@@ -796,7 +994,7 @@ int guestMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
-                setBackgorundColor(1);
+                readProject();
             }
             else if (selectedOption == 1) {
                 setBackgorundColor(2);
@@ -808,7 +1006,7 @@ int guestMenu()
                 setBackgorundColor(4);
             }
             else if (selectedOption == 4) {
-                setBackgorundColor(5);
+                break;
             }
         }
     }
@@ -846,6 +1044,147 @@ int projectMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
+                addProject();
+            }
+            else if (selectedOption == 1) {
+                readProject();
+            }
+            else if (selectedOption == 2) {
+                setBackgorundColor(3);
+            }
+            else if (selectedOption == 3) {
+                setBackgorundColor(4);
+            }
+            else if (selectedOption == 4) {
+                break;
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+
+int taskMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (0 == 0) {
+        displayMenu(taskOptions, selectedOption, 4, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 3;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 3) {
+            if (selectedOption == 3) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            if (selectedOption == 0) {
+                setBackgorundColor(1);
+            }
+            else if (selectedOption == 1) {
+                setBackgorundColor(2);
+            }
+            else if (selectedOption == 2) {
+                setBackgorundColor(3);
+            }
+            else if (selectedOption == 3) {
+                break;
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+int costMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (0 == 0) {
+        displayMenu(costOptions, selectedOption, 4, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 3;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 3) {
+            if (selectedOption == 3) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            if (selectedOption == 0) {
+                setBackgorundColor(1);
+            }
+            else if (selectedOption == 1) {
+                setBackgorundColor(2);
+            }
+            else if (selectedOption == 2) {
+                setBackgorundColor(3);
+            }
+            else if (selectedOption == 3) {
+                break;
+            }
+        }
+    }
+
+    return 1;
+}
+
+int supplierMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (0 == 0) {
+        displayMenu(supplierOptions, selectedOption, 5, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 4;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 4) {
+            if (selectedOption == 4) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            if (selectedOption == 0) {
                 setBackgorundColor(1);
             }
             else if (selectedOption == 1) {
@@ -858,21 +1197,13 @@ int projectMenu()
                 setBackgorundColor(4);
             }
             else if (selectedOption == 4) {
-                setBackgorundColor(5);
+                break;
             }
         }
     }
 
     return 1;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -923,8 +1254,8 @@ int displayMenu(const char **menuOptions, int selectedOption, int menuSize, int 
 int login() 
 {
     char enteredUsername[30];
-    char enteredPassword[30];
-    
+    int enteredPassword;
+    setTextColor(15);
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     system("cls");
 
@@ -946,24 +1277,33 @@ int login()
     printf("%.*s\n", 29, "=============================");
 
     while (loginAttempts < maxLoginAttempts) {
+
         setCursorPosition(x + 26, y + 8);
         printf(" -- LOGIN PAGE -- ");
         setCursorPosition(x + 21, y + 10);
         printf(" User name: ");
         scanf("%s", enteredUsername);
+        int userPassword = authenticateUser(enteredUsername);
+        if(userPassword==0){
+            setCursorPosition(x + 20, y + 13);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+            printf("         User Not Found         \n");
+            Sleep(1000);
+            break;
+        }
         setCursorPosition(x + 21, y + 11);
         printf(" Password: ");
-        char* enteredPassword = getPassword(); // getPassword iþlevini çağır
+        enteredPassword = getPassword(); // getPassword iþlevini çağır
 
-        if (strlen(enteredUsername) == strlen(Username) && strcmp(enteredUsername, Username) == 0 &&
-            strlen(enteredPassword) == strlen(Password) && strcmp(enteredPassword, Password) == 0) {
+        
 
+        if (userPassword==enteredPassword) {
             setCursorPosition(x + 20, y + 13);
             SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
             printf("             Access             \n");
             Sleep(1000);
             SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
-            return true;
+            return 1; // Successful login
         }
         else {
             loginAttempts++;
@@ -1004,10 +1344,10 @@ int login()
 
 
 
-char* getPassword() {
-    char password[30];
+int getPassword() {
     char ch;
     int index = 0;
+    char password[30];
 
     while (1) {
         ch = _getch();
@@ -1028,18 +1368,37 @@ char* getPassword() {
 
     printf("\n");
 
-    // Bu satırı ekleyerek karakter dizisinin sonuna null karakterini ekleyin.
     password[index] = '\0';
 
-    // Karakter dizisinin dinamik bellekte saklanması için yeniden ayırın
-    char* result = _strdup(password);
+    
+    int result = atoi(password);
 
     return result;
 }
 
 
 
+int authenticateUser(const char* enteredUsername) {
+    // Open the file for reading binary data
+    FILE* fp = fopen("login.bin", "rb");
 
+    if (fp == NULL) {
+        perror("Error opening file");
+        return 0;
+    }
+
+    struct User user;
+
+    while (fread(&user, sizeof(struct User), 1, fp) == 1) {
+        if (strcmp(enteredUsername, user.username) == 0){
+            fclose(fp);
+            return user.password; // Return user status (0 or 1)
+        }
+    }
+
+    fclose(fp);
+    return 0; // Authentication failed
+}
 
 
 
