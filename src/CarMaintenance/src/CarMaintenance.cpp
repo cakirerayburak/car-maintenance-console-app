@@ -330,7 +330,7 @@ int addProject() {
       setCursorPosition(x + 22, y + 7);
       printf("Driver Phone:");
       setCursorPosition(x + 36, y + 7);
-      scanf("%d", &projects.driverPhone);
+      scanf("%s", projects.driverPhone);
       fflush(stdin);
 
 
@@ -375,9 +375,42 @@ int addProject() {
  * @note The file "project.bin" should exist, and the project structure in the file should follow a specific format.
  * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
  */
-int deleteProject(const char *driverName) {
+int deleteProject() {
   FILE *fp;
   errno_t err = fopen_s(&fp, "project.bin", "rb+");;
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+  if (err != 0) {
+      printf("Exception While File Opening: %d\n", err);
+      return -1;
+  }
+
+  
+
+  int x = 30;
+  int y = 5;
+
+
+  system("cls");
+
+  setCursorPosition(x + 15, y);
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+
+  setCursorPosition(x + 20, y + 1);
+  printf("        Delete Project          ");
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+  char driverName[30];
+  setCursorPosition(x + 22, y + 3);
+  printf("Driver's Name:");
+  setCursorPosition(x + 37, y + 3);
+  scanf(" %[^\n]", driverName);
+  fflush(stdin);
 
   if (err != 0) {
     // Hata durumunda
@@ -411,6 +444,11 @@ int deleteProject(const char *driverName) {
   // Overwrite the user with null data
   struct Project nullProject = { 0 };
   fwrite(&nullProject, sizeof(struct Project), 1, fp);
+  setCursorPosition(x + 27, y + 10);
+  SetConsoleTextAttribute(hConsole, FOREGROUND_RED );
+  printf("Project Deleted Successfully");
+  SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+  Sleep(2000);
   fclose(fp);
   return 1;
 }
@@ -489,7 +527,7 @@ int readProject() {
               setCursorPosition(x + 22, y + 3);
               printf("Driver Name: %s", project.driverName);
               setCursorPosition(x + 22, y + 4);
-              printf("Driver Phone: %d", project.driverPhone);
+              printf("Driver Phone: %s", project.driverPhone);
               setCursorPosition(x + 22, y + 5);
               printf("Car's Brand: %s", project.brand);
               setCursorPosition(x + 22, y + 6);
@@ -503,17 +541,17 @@ int readProject() {
 
               int status = project.status;
               if (status == 0) {
-                  setCursorPosition(x + 22, y + 10);
+                  setCursorPosition(x + 25, y + 10);
                   SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
                   printf("Waiting For Repair");
               }
               if (status == 1) {
-                  setCursorPosition(x + 22, y + 10);
+                  setCursorPosition(x + 27, y + 10);
                   SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
                   printf("Repairing...");
               }
               if (status == 2) {
-                  setCursorPosition(x + 22, y + 10);
+                  setCursorPosition(x + 27, y + 10);
                   SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
                   printf("Finished!");
               }
@@ -1053,7 +1091,7 @@ int projectMenu()
                 setBackgorundColor(3);
             }
             else if (selectedOption == 3) {
-                setBackgorundColor(4);
+                deleteProject();
             }
             else if (selectedOption == 4) {
                 break;

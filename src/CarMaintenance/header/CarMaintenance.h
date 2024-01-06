@@ -31,7 +31,7 @@ struct Project {
   int year; /**< Year of the project. */
   char action[100]; /**< Action or description of the project. */
   char driverName[50]; /**< Name of the driver associated with the project. */
-  int driverPhone; /**< Phone number of the driver. */
+  char driverPhone[15]; /**< Phone number of the driver. */
   int kilometer; /**< Kilometer information of the project. */
   int status; /**< Status of the project. */
   char date1[40]; /**< Date information related to the project. */
@@ -157,7 +157,7 @@ int readProject();
  * @note The system file should exist, and the project structure in the file should follow a specific format.
  * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
  */
-int deleteProject(const char *driverName);
+int deleteProject();
 
 /**
  * @brief Updates a project's information in the system.
