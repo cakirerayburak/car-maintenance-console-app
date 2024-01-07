@@ -5,6 +5,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define MAX_USERNAME_LENGTH 50
 #define MAX_PASSWORD_LENGTH 50
+#define MAX_PATTERN_LENGTH 100
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -154,6 +155,55 @@ int addUser() {
     return 1;
 }
 
+int kmpSearch(const char* pat, const char* txt) {
+    size_t M = strlen(pat);
+    size_t N = strlen(txt);
+
+    int lps[MAX_PATTERN_LENGTH];
+    int len = 0;
+    lps[0] = 0;
+
+    int i = 1;
+    while (i < M) {
+        if (pat[i] == pat[len]) {
+            len++;
+            lps[i] = len;
+            i++;
+        }
+        else {
+            if (len != 0) {
+                len = lps[len - 1];
+            }
+            else {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+
+    i = 0;
+    int j = 0;
+    while (i < N) {
+        if (pat[j] == txt[i]) {
+            j++;
+            i++;
+        }
+
+        if (j == M) {
+            return i - j;
+        }
+        else if (i < N && pat[j] != txt[i]) {
+            if (j != 0)
+                j = lps[j - 1];
+            else
+                i = i + 1;
+        }
+    }
+
+    return -1;
+}
+
+
 /**
  * @brief Reads users from a file and prints their information.
  *
@@ -165,25 +215,25 @@ int addUser() {
  * @note The file "login.bin" should exist, and the user structure in the file should follow a specific format.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int readUser() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "login.bin", "rb");;
+int readUser(const char* username, int password) {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "login.bin", "rb");
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct User users;
-
-  while (fread(&users, sizeof(struct User), 1, fp) == 1) {
-    if(users.password!=0) {
-      printf("Username: %s, Passsword: %d, Status: %d\n", users.username,users.password,users.status);
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
-  }
 
-  fclose(fp);
-  return 1;
+    struct User user;
+
+    while (fread(&user, sizeof(struct User), 1, fp) == 1) {
+        if (user.password != 0 && kmpSearch(username, user.username) != -1 && user.password == password) {
+            printf("Username: %s, Password: %d, Status: %d\n", user.username, user.password, user.status);
+        }
+    }
+
+    fclose(fp);
+    return 1;
 }
 
 /**

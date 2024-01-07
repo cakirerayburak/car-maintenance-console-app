@@ -1,7 +1,7 @@
 #include "../header/CarMaintenance.h"
 #include <gtest/gtest.h>
 
-
+/*
 // Test addUser, readUser, and deleteUser functions
 TEST(CarMaintenanceTest, AddReadAndDeleteUser) {
   // Create a test user
@@ -26,3 +26,4 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
+*/

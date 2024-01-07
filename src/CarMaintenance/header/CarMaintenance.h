@@ -89,6 +89,8 @@ struct Supplier {
  */
 int addUser();
 
+int kmpSearch(const char* pat, const char* txt);
+
 /**
  * @brief Reads users from the system and prints their information.
  *
@@ -100,7 +102,7 @@ int addUser();
  * @note The system file should exist, and the user structure in the file should follow a specific format.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int readUser();
+int readUser(const char* username, int password);
 
 /**
  * @brief Deletes a user from the system.
