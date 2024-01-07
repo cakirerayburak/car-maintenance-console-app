@@ -18,6 +18,7 @@
 
 
 int updateProjectFlag = 0;
+int updateSupplierFlag = 0;
 
 
 
@@ -74,7 +75,7 @@ const char *taskOptions[] = {
 const char *costOptions[] = {
   "           Add Expense          ",
   "          View Expenses         ",
-  "         Generate Reports       ",
+  "          Daily Reports         ",
   "       Return to Main Menu      "
 };
 
@@ -450,6 +451,7 @@ int deleteProject() {
     setCursorPosition(x + 27, y + 10);
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
     if(updateProjectFlag==0){printf("Project Deleted Successfully");}
+    if (updateProjectFlag == 1) { printf("Project Updated Successfully"); }
   SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
   Sleep(2000);
   fclose(fp);
@@ -648,7 +650,7 @@ int addTask() {
   scanf(" %[^\n]", tasks.driverName);
   fflush(stdin);
 
-  if (readTaskControl(tasks.driverName) == -1) { setCursorPosition(x + 27, y + 6); printf("Driver Not Found"); Sleep(3000); return -1; }
+  if (readTaskControl(tasks.driverName) == -1) { setCursorPosition(x + 27, y + 6); printf("Driver Not Found"); Sleep(3000); return 0; }
 
   setCursorPosition(x + 22, y + 6);
   printf("Task's Description:");
@@ -951,22 +953,99 @@ int readTaskControl(const char *driverName) {
  * @warning This function assumes that the "cost.bin" file contains binary data of Cost structures.
  * The file should be opened in "ab" mode for appending.
  */
-int addCost(Cost cost[], size_t costNumber) {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "cost.bin", "ab");;
 
-  if (err != 0) {
-    // Hata durumunda
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
 
-  for (size_t i = 0; i < costNumber; ++i) {
-    fwrite(&cost[i], sizeof(struct Cost), 1, fp);
-  }
 
-  fclose(fp);
-  return 1;
+int addCost() {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "cost.bin", "ab");;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    time_t currentTime = time(nullptr);
+    struct tm* tmStruct = localtime(&currentTime);
+    char date[40];  // Yeterli boyutta bir karakter dizisi seçin
+    strftime(date, sizeof(date), "%Y-%m-%d %H:%M", tmStruct);
+
+    if (err != 0) {
+        // Hata durumunda
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
+
+
+    struct Cost cost;
+
+    int x = 30;
+    int y = 5;
+
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("           Add Cost             ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+
+
+    setCursorPosition(x + 22, y + 3);
+    printf("Driver Name:");
+    setCursorPosition(x + 36, y + 3);
+    scanf(" %[^\n]",cost.driverName);
+    fflush(stdin);
+
+    if (readTaskControl(cost.driverName) == -1) { setCursorPosition(x + 27, y + 6); printf("Driver Not Found"); Sleep(3000); return 0; }
+
+    setCursorPosition(x + 22, y + 4);
+    printf("Car's Brand:");
+    setCursorPosition(x + 35, y + 4);
+    scanf("%s", cost.brand);  // Use %d to read an integer
+    fflush(stdin);
+
+
+    setCursorPosition(x + 22, y + 5);
+    printf("Material:");
+    setCursorPosition(x + 33, y + 5);
+    scanf(" %[^\n]", cost.material);
+    fflush(stdin);
+
+    
+
+    setCursorPosition(x + 22, y + 6);
+    printf("Supplier:");
+    setCursorPosition(x + 33, y + 6);
+    scanf(" %[^\n]", cost.supplier);
+    fflush(stdin);
+
+    setCursorPosition(x + 22, y +7);
+    printf("Price:");
+    setCursorPosition(x + 33, y +7);
+    scanf("%d", &cost.price);
+    
+
+
+    
+    strcpy(cost.date1, date);
+
+
+    fwrite(&cost, sizeof(struct Cost), 1, fp);
+
+    setCursorPosition(x + 25, y + 9);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+    printf("Cost Added Successfully");
+    Sleep(2000);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+
+    fclose(fp);
+    return 1;
 }
 
 /**
@@ -982,25 +1061,169 @@ int addCost(Cost cost[], size_t costNumber) {
  * The file should be opened in "rb" mode for reading.
  */
 int readCost() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "cost.bin", "rb");
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "cost.bin", "rb+");;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct Cost cost;
-
-  while (fread(&cost, sizeof(struct Cost), 1, fp) == 1) {
-    if (strlen(cost.driverName) > 0) {
-      printf("Brand: %s, Driver Name: %s, Date1: %s, Supplier: %s, Price: %f, Material: %s\n",
-             cost.brand, cost.driverName, cost.date1, cost.supplier, cost.price, cost.material);
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
-  }
 
-  fclose(fp);
-  return 1;
+    struct Cost cost;
+
+    int x = 30;
+    int y = 5;
+
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("        View Cost         ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+    char driverName[30];
+    setCursorPosition(x + 22, y + 3);
+    printf("Driver's Name:");
+    setCursorPosition(x + 37, y + 3);
+    scanf(" %[^\n]", driverName);
+    fflush(stdin);
+
+    while (fread(&cost, sizeof(struct Cost), 1, fp) == 1) {
+
+
+        if (strcmp(driverName, cost.driverName) == 0) {
+
+
+            system("cls");
+
+            setCursorPosition(x + 15, y);
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 20, y + 1);
+            printf("          View Cost             ");
+            setCursorPosition(x + 15, y + 2);
+
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 22, y + 3);
+            printf("Driver Name: %s", cost.driverName);
+            setCursorPosition(x + 22, y + 4);
+            printf("Car's Brand: %s", cost.brand);
+            setCursorPosition(x + 22, y + 5);
+            printf("Material: %s", cost.material);
+            setCursorPosition(x + 22, y + 6);
+            printf("Supplier: %s", cost.supplier);
+            setCursorPosition(x + 22, y + 7);
+            printf("Price: %d", cost.price);
+            setCursorPosition(x + 22, y + 8);
+            printf("Date Added: %s", cost.date1);
+
+            strcpy(driverName, "");
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+            _getch();
+        }
+    }
+
+
+
+    fclose(fp);
+    return 1;
+}
+
+int costReports() {
+
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "cost.bin", "rb+");
+    
+
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
+
+    struct Cost cost;
+
+    int x = 30;
+    int y = 5;
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("        View Cost         ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    time_t currentTime = time(nullptr);
+    struct tm* tmStruct = localtime(&currentTime);
+
+    char currentDate[11];
+    char newDate[11];
+    strftime(currentDate, sizeof(currentDate), "%Y-%m-%d", tmStruct);
+
+    rewind(fp);
+    while (fread(&cost, sizeof(struct Cost), 1, fp) == 1) {
+
+        strftime(newDate, sizeof(newDate), "%Y-%m-%d", tmStruct);
+        if (strcmp(currentDate, newDate) == 0) {
+            system("cls");
+
+            setCursorPosition(x + 15, y);
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 20, y + 1);
+            printf("          View Cost             ");
+            setCursorPosition(x + 15, y + 2);
+
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 22, y + 3);
+            printf("Driver Name: %s", cost.driverName);
+            setCursorPosition(x + 22, y + 4);
+            printf("Car's Brand: %s", cost.brand);
+            setCursorPosition(x + 22, y + 5);
+            printf("Material: %s", cost.material);
+            setCursorPosition(x + 22, y + 6);
+            printf("Supplier: %s", cost.supplier);
+            setCursorPosition(x + 22, y + 7);
+            printf("Price: %d", cost.price);
+            setCursorPosition(x + 22, y + 8);
+            printf("Date Added: %s", cost.date1);
+
+            
+            
+            _getch();
+        }
+    }
+
+    fclose(fp);
+    return 1;
+
+
 }
 
 /**
@@ -1016,22 +1239,68 @@ int readCost() {
  * @warning This function assumes that the "supplier.bin" file contains binary data of Supplier structures.
  * The file should be opened in "ab" mode for appending.
  */
-int addSupplier(Supplier supplier[], size_t supplierNumber) {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "supplier.bin", "ab");;
+int addSupplier() {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "supplier.bin", "ab");
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  if (err != 0) {
-    // Hata durumunda
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
 
-  for (size_t i = 0; i < supplierNumber; ++i) {
-    fwrite(&supplier[i], sizeof(struct Supplier), 1, fp);
-  }
+    struct Supplier supplier;
 
-  fclose(fp);
-  return 1;
+    int x = 30;
+    int y = 10;
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    if (updateSupplierFlag == 0) { printf("          Add Supplier          "); }
+    if (updateSupplierFlag == 1) { printf("        Update Supplier         "); }
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 22, y + 3);
+    printf("Supplier Name:");
+    setCursorPosition(x + 38, y + 3);
+    scanf(" %[^\n]", supplier.supplierName);
+
+    setCursorPosition(x + 22, y + 4);
+    printf("Contact Number:");
+    setCursorPosition(x + 39, y + 4);
+    scanf(" %[^\n]", supplier.contactNumber); 
+
+    setCursorPosition(x + 22, y + 5);
+    printf("Bussines Type:");
+    setCursorPosition(x + 38, y + 5);
+    scanf(" %[^\n]", supplier.bussinesType);
+
+    setCursorPosition(x + 22, y + 6);
+    printf("Email:");
+    setCursorPosition(x + 30, y + 6);
+    scanf(" %[^\n]", supplier.email);
+
+
+    fwrite(&supplier, sizeof(struct Supplier), 1, fp);
+    setCursorPosition(x + 25, y + 7);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+    if (updateSupplierFlag == 0) { printf("Supplier Added Successfully"); }
+    if (updateSupplierFlag == 1) { printf("Supplier Updated Successfully"); }
+    Sleep(2000);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+
+    fclose(fp);
+    return 1;
 }
 
 /**
@@ -1047,25 +1316,87 @@ int addSupplier(Supplier supplier[], size_t supplierNumber) {
  * The file should be opened in "rb" mode for reading.
  */
 int readSupplier() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "supplier.bin", "rb");
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "supplier.bin", "rb+");;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct Supplier supplier;
-
-  while (fread(&supplier, sizeof(struct Supplier), 1, fp) == 1) {
-    if (strlen(supplier.supplierName) > 0) {
-      printf("Supplier Name: %s, Contact Number: %s, Email: %s, Bussines Type: %s\n",
-             supplier.supplierName,supplier.contactNumber,supplier.email,supplier.bussinesType);
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
-  }
 
-  fclose(fp);
-  return 1;
+    struct Supplier supplier;
+
+    int x = 30;
+    int y = 5;
+
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("         View Supplier          ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+    char supplierName[30];
+    setCursorPosition(x + 22, y + 3);
+    printf("Supplier's Name:");
+    setCursorPosition(x + 40, y + 3);
+    scanf(" %[^\n]", supplierName);
+    fflush(stdin);
+
+    int supplierFound = 0;
+    while (fread(&supplier, sizeof(struct Supplier), 1, fp) == 1) {
+
+
+        if (strcmp(supplierName, supplier.supplierName) == 0) {
+
+
+            system("cls");
+
+            setCursorPosition(x + 15, y);
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 20, y + 1);
+            printf("         View Supplier          ");
+            setCursorPosition(x + 15, y + 2);
+
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 22, y + 3);
+            printf("Supplier Name: %s", supplier.supplierName);
+            setCursorPosition(x + 22, y + 4);
+            printf("Supplier Phone: %s", supplier.contactNumber);
+            setCursorPosition(x + 22, y + 5);
+            printf("Bussines Type: %s", supplier.bussinesType);
+            setCursorPosition(x + 22, y + 6);
+            printf("Email: %s", supplier.email);
+            supplierFound = 1;
+            _getch();
+        }
+    }
+    if (supplierFound == 0) { 
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED); 
+        setCursorPosition(x + 27, y + 4);
+        printf("Supplier Not Found"); 
+        Sleep(2000);SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+        supplierFound = 0;
+    }
+
+
+    fclose(fp);
+    return 1;
 }
 
 /**
@@ -1081,15 +1412,42 @@ int readSupplier() {
  * @warning This function assumes that the "supplier.bin" file contains binary data of Supplier structures.
  * The file should be opened in "rb+" mode for both reading and writing.
  */
-int deleteSupplier(const char *supplierName) {
+int deleteSupplier() {
   FILE *fp;
-  errno_t err = fopen_s(&fp, "supplier.bin", "rb+");;
+  errno_t err = fopen_s(&fp, "supplier.bin", "rb+");
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
 
   if (err != 0) {
     // Hata durumunda
     printf("Exception While File Opening: %d\n", err);
     return -1;
   }
+  int x = 30;
+  int y = 5;
+
+
+  system("cls");
+
+  setCursorPosition(x + 15, y);
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+
+  setCursorPosition(x + 20, y + 1);
+  if (updateSupplierFlag == 0) { printf("        Delete Supplier         "); }
+  if (updateSupplierFlag == 1) { printf("        Update Supplier         "); }
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+  char supplierName[30];
+  setCursorPosition(x + 22, y + 3);
+  printf("Supplier's Name:");
+  setCursorPosition(x + 39, y + 3);
+  scanf(" %[^\n]", supplierName);
+  fflush(stdin);
 
   struct Supplier currentSupplier;
 
@@ -1108,7 +1466,11 @@ int deleteSupplier(const char *supplierName) {
 
   if (!supplierFound) {
     fclose(fp);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+    setCursorPosition(x + 22, y + 6);
     printf("User with supplier name %s not found.\n", supplierName);
+    Sleep(2000); 
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
     return -1; // User not found
   }
 
@@ -1117,6 +1479,12 @@ int deleteSupplier(const char *supplierName) {
   // Overwrite the user with null data
   struct Supplier nullSupplier = { 0 };
   fwrite(&nullSupplier, sizeof(struct Supplier), 1, fp);
+  SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+  setCursorPosition(x + 22, y + 6);
+  if (updateSupplierFlag == 0) { printf("Supplier Deleted Successfully"); }
+  if (updateSupplierFlag == 1) { printf("Supplier Updated Successfully"); }
+  Sleep(2000);
+  SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
   fclose(fp);
   return 1;
 }
@@ -1273,13 +1641,13 @@ int guestMenu()
                 readProject();
             }
             else if (selectedOption == 1) {
-                setBackgorundColor(2);
+                readTask();
             }
             else if (selectedOption == 2) {
-                setBackgorundColor(3);
+                readCost();
             }
             else if (selectedOption == 3) {
-                setBackgorundColor(4);
+                readSupplier();
             }
             else if (selectedOption == 4) {
                 break;
@@ -1419,13 +1787,13 @@ int costMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
-                setBackgorundColor(1);
+                addCost();
             }
             else if (selectedOption == 1) {
-                setBackgorundColor(2);
+                readCost();
             }
             else if (selectedOption == 2) {
-                setBackgorundColor(3);
+                costReports();
             }
             else if (selectedOption == 3) {
                 break;
@@ -1464,16 +1832,19 @@ int supplierMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
-                setBackgorundColor(1);
+                addSupplier();
             }
             else if (selectedOption == 1) {
-                setBackgorundColor(2);
+                updateSupplierFlag = 1;
+                deleteSupplier();
+                addSupplier();
+                updateSupplierFlag = 0;
             }
             else if (selectedOption == 2) {
-                setBackgorundColor(3);
+                deleteSupplier();
             }
             else if (selectedOption == 3) {
-                setBackgorundColor(4);
+                readSupplier();
             }
             else if (selectedOption == 4) {
                 break;

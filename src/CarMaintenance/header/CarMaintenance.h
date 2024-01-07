@@ -58,8 +58,8 @@ struct Cost {
   char brand[30]; /**< Brand associated with the cost. */
   char driverName[50]; /**< Driver name associated with the cost. */
   char date1[40]; /**< Date information related to the cost. */
-  char supplier[52]; /**< Supplier of the material or service. */
-  float price; /**< Price of the material or service. */
+  char supplier[50]; /**< Supplier of the material or service. */
+  int price; /**< Price of the material or service. */
   char material[100]; /**< Material or service description. */
 
 };
@@ -70,8 +70,8 @@ struct Cost {
 struct Supplier {
   char supplierName[50]; /**< Name of the supplier. */
   char contactNumber[15]; /**< Contact number of the supplier. */
-  char email[30]; /**< Email address of the supplier. */
-  char bussinesType[25]; /**< Business type of the supplier. */
+  char email[50]; /**< Email address of the supplier. */
+  char bussinesType[50]; /**< Business type of the supplier. */
 };
 
 /**
@@ -214,7 +214,7 @@ int updateTaskStatus(struct Task task[], const char *driverName, int statusNew);
  * @param costNumber The number of costs in the array.
  * @return Returns 0 on success, -1 on failure.
  */
-int addCost(struct Cost cost[], size_t costNumber);
+int addCost();
 
 /**
  * @brief Reads a cost.
@@ -234,7 +234,7 @@ int readCost();
  * @param supplierNumber The number of suppliers in the array.
  * @return Returns 0 on success, -1 on failure.
  */
-int addSupplier(struct Supplier supplier[], size_t supplierNumber);
+int addSupplier();
 
 /**
  * @brief Reads a supplier.
@@ -254,5 +254,6 @@ int readSupplier();
  * @param supplierName The name of the supplier to be deleted.
  * @return Returns 0 on success, -1 on failure.
  */
-int deleteSupplier(const char *supplierName);
+int deleteSupplier();
+int costReports();
 #endif
