@@ -74,6 +74,21 @@ struct Supplier {
   char bussinesType[50]; /**< Business type of the supplier. */
 };
 
+struct DoubleHash {
+    DoubleHash(int size);
+    int insert(const char* key, const Project& project);
+    int search(const char* key, Project& project);
+
+private:
+    int hash1(const char* key);
+    int hash2(const char* key);
+    int getNextIndex(int index, int attempt);
+
+    int size;
+    Project* projects;
+    bool* isOccupied;
+};
+
 /**
  * @brief Adds users to the system.
  *

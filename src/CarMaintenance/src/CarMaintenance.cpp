@@ -96,6 +96,14 @@ const char* guestOption[] = {
   "      Return to Login Menu      "
 };
 
+const char* integrationOptions[] = {
+  " Connect to Car Diagnostic Service ",
+  "  Import/Export Data to Excel/CSV  ",
+  "   GPS Integration for Tracking    ",
+  " Notification Integration (E-Mail) ",
+  "      Return to Main Menu          "
+};
+
 /**
  * @brief Adds users to a file.
  *
@@ -509,118 +517,200 @@ int deleteProject() {
 }
 
 
+
+DoubleHash::DoubleHash(int size) {
+    this->size = size;
+    projects = new Project[size];
+    isOccupied = new bool[size];
+    for (int i = 0; i < size; i++) {
+        isOccupied[i] = false;
+    }
+}
+
+int DoubleHash::hash1(const char* key) {
+    int hash = 0;
+    for (int i = 0; key[i] != '\0'; i++) {
+        hash = (hash * 31 + key[i]) % size;
+    }
+    return hash;
+}
+
+int DoubleHash::hash2(const char* key) {
+    int hash = 0;
+    for (int i = 0; key[i] != '\0'; i++) {
+        hash += key[i];
+    }
+    return (17 - (hash % 17));
+}
+
+int DoubleHash::getNextIndex(int index, int attempt) {
+    return (index + attempt * hash2(projects[index].driverName)) % size;
+}
+
+int DoubleHash::insert(const char* key, const Project& project) {
+    int index = hash1(key);
+    int attempt = 0;
+
+    while (isOccupied[index]) {
+        attempt++;
+        index = getNextIndex(hash1(key), attempt);
+
+        if (attempt >= size) {
+            // Table is full
+            return -1;
+        }
+    }
+
+    isOccupied[index] = true;
+    projects[index] = project;
+    return 1;
+}
+
+int DoubleHash::search(const char* key, Project& project) {
+    int index = hash1(key);
+    int attempt = 0;
+
+    while (isOccupied[index]) {
+        if (strcmp(projects[index].driverName, key) == 0) {
+            project = projects[index];
+            return 1; // Found
+        }
+
+        attempt++;
+        index = getNextIndex(hash1(key), attempt);
+
+        if (attempt >= size) {
+            // Not found
+            return 0;
+        }
+    }
+
+    // Not found
+    return 0;
+}
+
+
 /**
- * @brief Reads projects from a file and prints their information.
+ * @brief Reads projects from a binary file and displays information for a specific driver.
  *
- * This function opens the file "project.bin" and reads project information from it.
- * It prints the brand, year, action, driver name, driver phone, kilometer, date, status, and other details
- * of each project to the console.
+ * This function reads project information from the file "project.bin" using double hashing
+ * for efficient retrieval. It prompts the user for a driver's name, searches for the corresponding
+ * project using double hashing, and displays detailed information if the project is found.
+ * If the project is not found, it prints an error message indicating that the project was not found
+ * for the specified driver.
  *
- * @return A value representing the success status. 1 indicates success, 0 indicates an error.
+ * @return A value representing the success status. 1 indicates success, -1 indicates an error.
  *
  * @note The file "project.bin" should exist, and the project structure in the file should follow a specific format.
  * @warning If there is an error opening the file, an error message is printed.
  */
 int readProject() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "project.bin", "rb+");;
-  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "project.bin", "rb+");
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  if (err != 0) {
-      printf("Exception While File Opening: %d\n", err);
-      return -1;
-  }
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
 
-  struct Project project;
+    struct Project project;
 
-  int x = 30;
-  int y = 5;
+    int x = 30;
+    int y = 5;
 
+    system("cls");
 
-  system("cls");
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
 
-  setCursorPosition(x + 15, y);
-  for (int i = 0; i <= 43; i++) {
-      printf("=");
-  }
+    setCursorPosition(x + 20, y + 1);
+    printf("         View Project           ");
+    setCursorPosition(x + 15, y + 2);
 
-  setCursorPosition(x + 20, y + 1);
-  printf("         View Project           ");
-  setCursorPosition(x + 15, y + 2);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
 
-  for (int i = 0; i <= 43; i++) {
-      printf("=");
-  }
-  char driverName[30];
-  setCursorPosition(x + 22, y + 3);
-  printf("Driver's Name:");
-  setCursorPosition(x + 37, y + 3);
-  scanf(" %[^\n]", driverName);
-  fflush(stdin);
+    DoubleHash doubleHash(50); // Adjust the size as needed
 
-  while (fread(&project, sizeof(struct Project), 1, fp) == 1) {
-      
+    // Read projects and insert them into the hash table
+    while (fread(&project, sizeof(struct Project), 1, fp) == 1) {
+        doubleHash.insert(project.driverName, project);
+    }
 
-      if (strcmp(driverName, project.driverName)==0 && project.year>0) {
+    char driverName[30];
+    setCursorPosition(x + 22, y + 3);
+    printf("Driver's Name:");
+    setCursorPosition(x + 37, y + 3);
+    fgets(driverName, sizeof(driverName), stdin);
+    driverName[strcspn(driverName, "\n")] = '\0';
+    fflush(stdin);
 
+    Project resultProject;
+    if (doubleHash.search(driverName, resultProject)) {
+        system("cls");
 
-              system("cls");
+        setCursorPosition(x + 15, y);
+        for (int i = 0; i <= 43; i++) {
+            printf("=");
+        }
 
-              setCursorPosition(x + 15, y);
-              for (int i = 0; i <= 43; i++) {
-                  printf("=");
-              }
+        setCursorPosition(x + 20, y + 1);
+        printf("         View Project           ");
+        setCursorPosition(x + 15, y + 2);
 
-              setCursorPosition(x + 20, y + 1);
-              printf("         View Project           ");
-              setCursorPosition(x + 15, y + 2);
+        for (int i = 0; i <= 43; i++) {
+            printf("=");
+        }
 
-              for (int i = 0; i <= 43; i++) {
-                  printf("=");
-              }
+        setCursorPosition(x + 22, y + 3);
+        printf("Driver Name: %s", resultProject.driverName);
+        setCursorPosition(x + 22, y + 4);
+        printf("Driver Phone: %s", resultProject.driverPhone);
+        setCursorPosition(x + 22, y + 5);
+        printf("Car's Brand: %s", resultProject.brand);
+        setCursorPosition(x + 22, y + 6);
+        printf("Model Year: %d", resultProject.year);
+        setCursorPosition(x + 22, y + 7);
+        printf("What To Do: %s", resultProject.action);
+        setCursorPosition(x + 22, y + 8);
+        printf("Car's Kilometer: %d", resultProject.kilometer);
+        setCursorPosition(x + 22, y + 9);
+        printf("Date Added: %s", resultProject.date1);
 
-              setCursorPosition(x + 22, y + 3);
-              printf("Driver Name: %s", project.driverName);
-              setCursorPosition(x + 22, y + 4);
-              printf("Driver Phone: %s", project.driverPhone);
-              setCursorPosition(x + 22, y + 5);
-              printf("Car's Brand: %s", project.brand);
-              setCursorPosition(x + 22, y + 6);
-              printf("Model Year: %d", project.year);
-              setCursorPosition(x + 22, y + 7);
-              printf("What To Do: %s", project.action);
-              setCursorPosition(x + 22, y + 8);
-              printf("Car's Kilometer: %d", project.kilometer);
-              setCursorPosition(x + 22, y + 9);
-              printf("Date Added: %s", project.date1);
+        int status = resultProject.status;
+        if (status == 0) {
+            setCursorPosition(x + 25, y + 10);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+            printf("Waiting For Repair");
+        }
+        if (status == 1) {
+            setCursorPosition(x + 27, y + 10);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+            printf("Repairing...");
+        }
+        if (status == 2) {
+            setCursorPosition(x + 27, y + 10);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+            printf("Finished!");
+        }
 
-              int status = project.status;
-              if (status == 0) {
-                  setCursorPosition(x + 25, y + 10);
-                  SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-                  printf("Waiting For Repair");
-              }
-              if (status == 1) {
-                  setCursorPosition(x + 27, y + 10);
-                  SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-                  printf("Repairing...");
-              }
-              if (status == 2) {
-                  setCursorPosition(x + 27, y + 10);
-                  SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
-                  printf("Finished!");
-              }
-              
-              strcpy(driverName, "");
-              SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
-              _getch();
-      }
-  }
+        strcpy(driverName, "");
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+        _getch();
+    }
+    else {
+        // Project not found
+        setCursorPosition(x + 22, y + 3);
+        printf("Project not found for driver: %s", driverName);
+        _getch();
+    }
 
-  
-
-  fclose(fp);
-  return 1;
+    fclose(fp);
+    return 1;
 }
 
 int updateProject() {
@@ -641,71 +731,74 @@ int updateProject() {
  * @warning If there is an error opening the file, an error message is printed.
  */
 int addTask() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "task.bin", "ab");;
-  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "task.bin", "ab");;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  time_t currentTime = time(nullptr);
-  struct tm* tmStruct = localtime(&currentTime);
-  char date[40];  // Yeterli boyutta bir karakter dizisi seçin
-  strftime(date, sizeof(date), "%Y-%m-%d %H:%M", tmStruct);
+    time_t currentTime = time(nullptr);
+    struct tm* tmStruct = localtime(&currentTime);
+    char date[40];  // Yeterli boyutta bir karakter dizisi seçin
+    strftime(date, sizeof(date), "%Y-%m-%d %H:%M", tmStruct);
 
-  if (err != 0) {
-    // Hata durumunda
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-
-  struct Task tasks;
-
-  int x = 30;
-  int y = 5;
+    if (err != 0) {
+        // Hata durumunda
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
 
 
-  system("cls");
+    struct Task tasks;
 
-  setCursorPosition(x + 15, y);
-  for (int i = 0; i <= 43; i++) {
-      printf("=");
-  }
-
-  setCursorPosition(x + 20, y + 1);
-  printf("           Add Task             ");
-  setCursorPosition(x + 15, y + 2);
-
-  for (int i = 0; i <= 43; i++) {
-      printf("=");
-  }
+    int x = 30;
+    int y = 5;
 
 
+    system("cls");
 
-  setCursorPosition(x + 22, y + 3);
-  printf("Asssignee:");
-  setCursorPosition(x + 32, y + 3);
-  scanf(" %[^\n]", tasks.assignee);
-  fflush(stdin);
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("           Add Task             ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
 
 
-  setCursorPosition(x + 22, y + 4);
-  printf("Car's Brand:");
-  setCursorPosition(x + 34, y + 4);
-  scanf("%s", tasks.brand);  // Use %d to read an integer
-  fflush(stdin);
+
+    setCursorPosition(x + 22, y + 3);
+    printf("Asssignee:");
+    setCursorPosition(x + 32, y + 3);
+    fgets(tasks.assignee, sizeof(tasks.assignee), stdin);
+    tasks.assignee[strcspn(tasks.assignee, "\n")] = '/0';
+    fflush(stdin);
 
 
-  setCursorPosition(x + 22, y + 5);
-  printf("Driver Name:");
-  setCursorPosition(x + 34, y + 5);
-  scanf(" %[^\n]", tasks.driverName);
-  fflush(stdin);
+    setCursorPosition(x + 22, y + 4);
+    printf("Car's Brand:");
+    setCursorPosition(x + 34, y + 4);
+    scanf("%s", tasks.brand);  // Use %d to read an integer
+    fflush(stdin);
+
+
+    setCursorPosition(x + 22, y + 5);
+    printf("Driver Name:");
+    setCursorPosition(x + 34, y + 5);
+    fgets(tasks.driverName, sizeof(tasks.driverName), stdin);
+    tasks.driverName[strcspn(tasks.driverName, "\n")] = '\0';
+    fflush(stdin);
 
   if (readTaskControl(tasks.driverName) == -1) { setCursorPosition(x + 27, y + 6); printf("Driver Not Found"); Sleep(3000); return 0; }
 
   setCursorPosition(x + 22, y + 6);
   printf("Task's Description:");
   setCursorPosition(x + 42, y + 6);
-  scanf(" %[^\n]", tasks.description);
+  fgets(tasks.description, sizeof(tasks.description), stdin);
+  tasks.description[strcspn(tasks.description, "\n")] = '\0';
   fflush(stdin);
 
   tasks.status = 1;
@@ -774,7 +867,8 @@ int updateTaskStatus() {
   setCursorPosition(x + 22, y + 3);
   printf("Driver's Name:");
   setCursorPosition(x + 37, y + 3);
-  scanf(" %[^\n]", driverName);
+  fgets(driverName, sizeof(driverName), stdin);
+  driverName[strcspn(driverName, "\n")] = '/0';
   fflush(stdin);
   
 
@@ -903,7 +997,8 @@ int readTask() {
     setCursorPosition(x + 22, y + 3);
     printf("Driver's Name:");
     setCursorPosition(x + 37, y + 3);
-    scanf(" %[^\n]", driverName);
+    fgets(driverName, sizeof(driverName), stdin);
+    driverName[strcspn(driverName, "\n")] = '/0';
     fflush(stdin);
 
     while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
@@ -1649,7 +1744,7 @@ int authenticatedMenu()
                 supplierMenu();
             }
             else if (selectedOption == 4) {
-                setBackgorundColor(5);
+                integrationsMenu();
             }
             else if (selectedOption == 5) {
                 break;
@@ -1904,6 +1999,60 @@ int supplierMenu()
 
     return 1;
 }
+
+int integrationsMenu()
+{
+    int selectedOption = 0;
+    int x = 30;
+    int y = 10;
+
+    while (true) {
+        displayMenu(integrationOptions, selectedOption, 5, x, y);
+        char key = _getch();
+
+        if (key == 72 && selectedOption >= 0) {
+            if (selectedOption == 0) {
+                selectedOption = 4;
+            }
+            else {
+                selectedOption--;
+            }
+        }
+        else if (key == 80 && selectedOption <= 4) {
+            if (selectedOption == 4) {
+                selectedOption = 0;
+            }
+            else {
+                selectedOption++;
+            }
+        }
+        else if (key == 13) {
+            switch (selectedOption) {
+            case 0:
+                // Implement Car Diagnostic Service Integration
+                // connectToCarDiagnosticService();
+                break;
+            case 1:
+                // Implement Import/Export Data to Excel/CSV
+                // importExportData();
+                break;
+            case 2:
+                // Implement GPS Integration for Tracking
+                // integrateGPSTracking();
+                break;
+            case 3:
+                // Implement Notification Integration
+                // integrateNotifications();
+                break;
+            case 4:
+                return 1; // Return to the main menu
+            }
+        }
+    }
+
+    return 1;
+}
+
 
 
 

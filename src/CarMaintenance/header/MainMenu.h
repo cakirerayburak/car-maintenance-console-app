@@ -56,6 +56,7 @@ int projectMenu();
 int taskMenu();
 int costMenu();
 int supplierMenu();
+int integrationsMenu();
 
 
 
