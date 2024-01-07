@@ -17,8 +17,7 @@
 #include "MainMenu.h"
 
 
-const char Username[] = "admin";
-const char Password[] = "123";
+int updateProjectFlag = 0;
 
 
 
@@ -290,7 +289,8 @@ int addProject() {
       }
 
       setCursorPosition(x + 20, y + 1);
-      printf("        Create Project          ");
+      if (updateProjectFlag == 0) { printf("        Create Project          "); }
+      if (updateProjectFlag == 1) { printf("        Update Project          "); }
       setCursorPosition(x + 15, y + 2);                                                         
 
       for (int i = 0; i <= 43; i++) {
@@ -348,12 +348,14 @@ int addProject() {
 
       setCursorPosition(x + 25, y + 9);
       SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-      printf("Project Added Successfully");
+      if(updateProjectFlag==0){printf("Project Added Successfully");}
+      if (updateProjectFlag == 1) { printf("Project Updated Successfully"); }
       Sleep(2000);
       SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
       
 
       fclose(fp);
+      
       return 1;
 
 
@@ -376,77 +378,78 @@ int addProject() {
  * @warning If there is an error opening the file or the specified project is not found, an error message is printed.
  */
 int deleteProject() {
-  FILE *fp;
-  errno_t err = fopen_s(&fp, "project.bin", "rb+");;
-  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "project.bin", "rb+");;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  if (err != 0) {
-      printf("Exception While File Opening: %d\n", err);
-      return -1;
-  }
-
-  
-
-  int x = 30;
-  int y = 5;
-
-
-  system("cls");
-
-  setCursorPosition(x + 15, y);
-  for (int i = 0; i <= 43; i++) {
-      printf("=");
-  }
-
-  setCursorPosition(x + 20, y + 1);
-  printf("        Delete Project          ");
-  setCursorPosition(x + 15, y + 2);
-
-  for (int i = 0; i <= 43; i++) {
-      printf("=");
-  }
-  char driverName[30];
-  setCursorPosition(x + 22, y + 3);
-  printf("Driver's Name:");
-  setCursorPosition(x + 37, y + 3);
-  scanf(" %[^\n]", driverName);
-  fflush(stdin);
-
-  if (err != 0) {
-    // Hata durumunda
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
-  }
-
-  struct Project currentProject;
-
-  long int currentPosition = ftell(fp);
-  int projectFound = 0;
-
-  // Find and delete the user with the specified username
-  while (fread(&currentProject, sizeof(struct Project), 1, fp) == 1) {
-    if (strcmp(currentProject.driverName, driverName) == 0) {
-      projectFound = 1;
-      break;
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
     }
 
-    currentPosition = ftell(fp);
-  }
 
-  if (!projectFound) {
-    fclose(fp);
-    printf("User with username %s not found.\n", driverName);
-    return -1; // User not found
-  }
 
-  // Move the file pointer to the beginning of the user to be deleted
-  fseek(fp, currentPosition, SEEK_SET);
-  // Overwrite the user with null data
-  struct Project nullProject = { 0 };
-  fwrite(&nullProject, sizeof(struct Project), 1, fp);
-  setCursorPosition(x + 27, y + 10);
-  SetConsoleTextAttribute(hConsole, FOREGROUND_RED );
-  printf("Project Deleted Successfully");
+    int x = 30;
+    int y = 5;
+
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    if (updateProjectFlag == 0) { printf("        Delete Project          "); }
+    if (updateProjectFlag == 1) { printf("        Update Project          "); }
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+    char driverName[30];
+    setCursorPosition(x + 22, y + 3);
+    printf("Driver's Name:");
+    setCursorPosition(x + 37, y + 3);
+    scanf(" %[^\n]", driverName);
+    fflush(stdin);
+
+    if (err != 0) {
+        // Hata durumunda
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
+
+    struct Project currentProject;
+
+    long int currentPosition = ftell(fp);
+    int projectFound = 0;
+
+    // Find and delete the user with the specified username
+    while (fread(&currentProject, sizeof(struct Project), 1, fp) == 1) {
+        if (strcmp(currentProject.driverName, driverName) == 0) {
+            projectFound = 1;
+            break;
+        }
+
+        currentPosition = ftell(fp);
+    }
+
+    if (!projectFound) {
+        fclose(fp);
+        printf("User with username %s not found.\n", driverName);
+        return -1; // User not found
+    }
+
+    // Move the file pointer to the beginning of the user to be deleted
+    fseek(fp, currentPosition, SEEK_SET);
+    // Overwrite the user with null data
+    struct Project nullProject = { 0 };
+    fwrite(&nullProject, sizeof(struct Project), 1, fp);
+    setCursorPosition(x + 27, y + 10);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+    if(updateProjectFlag==0){printf("Project Deleted Successfully");}
   SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
   Sleep(2000);
   fclose(fp);
@@ -506,7 +509,7 @@ int readProject() {
   while (fread(&project, sizeof(struct Project), 1, fp) == 1) {
       
 
-      if (strcmp(driverName, project.driverName)==0) {
+      if (strcmp(driverName, project.driverName)==0 && project.year>0) {
 
 
               system("cls");
@@ -585,9 +588,15 @@ int updateProject() {
  * @note The file name and task information should follow a specific structure.
  * @warning If there is an error opening the file, an error message is printed.
  */
-int addTask(Task task[], size_t taskNumber) {
+int addTask() {
   FILE *fp;
   errno_t err = fopen_s(&fp, "task.bin", "ab");;
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+  time_t currentTime = time(nullptr);
+  struct tm* tmStruct = localtime(&currentTime);
+  char date[40];  // Yeterli boyutta bir karakter dizisi seçin
+  strftime(date, sizeof(date), "%Y-%m-%d %H:%M", tmStruct);
 
   if (err != 0) {
     // Hata durumunda
@@ -595,9 +604,69 @@ int addTask(Task task[], size_t taskNumber) {
     return -1;
   }
 
-  for (size_t i = 0; i < taskNumber; ++i) {
-    fwrite(&task[i], sizeof(struct Task), 1, fp);
+
+  struct Task tasks;
+
+  int x = 30;
+  int y = 5;
+
+
+  system("cls");
+
+  setCursorPosition(x + 15, y);
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
   }
+
+  setCursorPosition(x + 20, y + 1);
+  printf("           Add Task             ");
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+
+
+
+  setCursorPosition(x + 22, y + 3);
+  printf("Asssignee:");
+  setCursorPosition(x + 32, y + 3);
+  scanf(" %[^\n]", tasks.assignee);
+  fflush(stdin);
+
+
+  setCursorPosition(x + 22, y + 4);
+  printf("Car's Brand:");
+  setCursorPosition(x + 34, y + 4);
+  scanf("%s", tasks.brand);  // Use %d to read an integer
+  fflush(stdin);
+
+
+  setCursorPosition(x + 22, y + 5);
+  printf("Driver Name:");
+  setCursorPosition(x + 34, y + 5);
+  scanf(" %[^\n]", tasks.driverName);
+  fflush(stdin);
+
+  if (readTaskControl(tasks.driverName) == -1) { setCursorPosition(x + 27, y + 6); printf("Driver Not Found"); Sleep(3000); return -1; }
+
+  setCursorPosition(x + 22, y + 6);
+  printf("Task's Description:");
+  setCursorPosition(x + 42, y + 6);
+  scanf(" %[^\n]", tasks.description);
+  fflush(stdin);
+
+  tasks.status = 1;
+  strcpy(tasks.date1, date);
+
+
+  fwrite(&tasks, sizeof(struct Task), 1, fp);
+
+  setCursorPosition(x + 25, y + 9);
+  SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+  printf("Task Added Successfully");
+  Sleep(2000);
+  SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
 
   fclose(fp);
   return 1;
@@ -621,14 +690,41 @@ int deleteTask() {
  * @warning This function assumes that the "task.bin" file contains binary data of Task structures.
  * The file should be opened in "rb+" mode for both reading and writing.
  */
-int updateTaskStatus(Task task[], const char *driverName, int statusNew) {
+int updateTaskStatus() {
   FILE *fp;
   errno_t err = fopen_s(&fp, "task.bin", "rb+");
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
   if (err != 0) {
-    printf("Exception While File Opening: %d\n", err);
-    return -1;
+      printf("Exception While File Opening: %d\n", err);
+      return -1;
   }
+
+  int x = 30;
+  int y = 5;
+
+
+  system("cls");
+
+  setCursorPosition(x + 15, y);
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+
+  setCursorPosition(x + 20, y + 1);
+  printf("      Update Task Status        ");
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+  char driverName[30];
+  setCursorPosition(x + 22, y + 3);
+  printf("Driver's Name:");
+  setCursorPosition(x + 37, y + 3);
+  scanf(" %[^\n]", driverName);
+  fflush(stdin);
+  
 
   struct Task currentTask;
 
@@ -650,6 +746,49 @@ int updateTaskStatus(Task task[], const char *driverName, int statusNew) {
     printf("Task with Driver Name: %s not found.\n", driverName);
     return -1; // Task not found
   }
+
+
+  system("cls");
+
+  setCursorPosition(x + 15, y);
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+
+  setCursorPosition(x + 20, y + 1);
+  printf("      Update Task Status        ");
+  setCursorPosition(x + 15, y + 2);
+
+  for (int i = 0; i <= 43; i++) {
+      printf("=");
+  }
+  int statusNew;
+
+  do {
+      SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+      setCursorPosition(x + 22, y + 3);
+      printf("Press 0 For Waiting For Repair Status");
+
+      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+      setCursorPosition(x + 22, y + 4);
+      printf("Press 1 For Repairing Status");
+      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+      SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+      setCursorPosition(x + 22, y + 5);
+      printf("Press 2 For Finished Status");
+      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+      int keyPressed = _getch(); 
+      if (keyPressed == '0') {
+          statusNew = 0;
+      }
+      else if (keyPressed == '1') {
+          statusNew = 1;
+      }
+      else if (keyPressed == '2') {
+          statusNew = 2;
+      }
+
+  } while (statusNew == -1); // Kullanıcı geçerli bir seçenek yapana kadar döngü devam eder
 
   // Move the file pointer to the beginning of the task to be updated
   fseek(fp, currentPosition, SEEK_SET);
@@ -679,25 +818,124 @@ int updateTaskStatus(Task task[], const char *driverName, int statusNew) {
  * The file should be opened in "rb" mode for reading.
  */
 int readTask() {
+    FILE* fp;
+    errno_t err = fopen_s(&fp, "task.bin", "rb+");;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    if (err != 0) {
+        printf("Exception While File Opening: %d\n", err);
+        return -1;
+    }
+
+    struct Task task;
+
+    int x = 30;
+    int y = 5;
+
+
+    system("cls");
+
+    setCursorPosition(x + 15, y);
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+
+    setCursorPosition(x + 20, y + 1);
+    printf("           View Task            ");
+    setCursorPosition(x + 15, y + 2);
+
+    for (int i = 0; i <= 43; i++) {
+        printf("=");
+    }
+    char driverName[30];
+    setCursorPosition(x + 22, y + 3);
+    printf("Driver's Name:");
+    setCursorPosition(x + 37, y + 3);
+    scanf(" %[^\n]", driverName);
+    fflush(stdin);
+
+    while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
+
+
+        if (strcmp(driverName, task.driverName) == 0) {
+
+
+            system("cls");
+
+            setCursorPosition(x + 15, y);
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 20, y + 1);
+            printf("           View Task            ");
+            setCursorPosition(x + 15, y + 2);
+
+            for (int i = 0; i <= 43; i++) {
+                printf("=");
+            }
+
+            setCursorPosition(x + 22, y + 3);
+            printf("Assignee: %s", task.assignee);
+            setCursorPosition(x + 22, y + 4);
+            printf("Driver Name: %s", task.driverName);
+            setCursorPosition(x + 22, y + 5);
+            printf("Car's Brand: %s", task.brand);
+            setCursorPosition(x + 22, y + 6);
+            printf("Task Description: %s", task.description);
+            setCursorPosition(x + 22, y + 7);
+            printf("Date Added: %s", task.date1);
+
+            int status = task.status;
+            if (status == 0) {
+                setCursorPosition(x + 25, y + 8);
+                SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+                printf("Waiting For Repair");
+            }
+            if (status == 1) {
+                setCursorPosition(x + 27, y + 8);
+                SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+                printf("Repairing...");
+            }
+            if (status == 2) {
+                setCursorPosition(x + 27, y + 8);
+                SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+                printf("Finished!");
+            }
+
+            strcpy(driverName, "");
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+            _getch();
+        }
+    }
+
+
+
+    fclose(fp);
+    return 1;
+
+
+
+}
+int readTaskControl(const char *driverName) {
   FILE *fp;
-  errno_t err = fopen_s(&fp, "task.bin", "rb");
+  errno_t err = fopen_s(&fp, "project.bin", "rb");
 
   if (err != 0) {
     printf("Exception While File Opening: %d\n", err);
     return -1;
   }
 
-  struct Task task;
+  struct Project project;
 
-  while (fread(&task, sizeof(struct Task), 1, fp) == 1) {
-    if (strlen(task.driverName) > 0) {
-      printf("Brand: %s, Driver Name: %s, Description: %s, Assignee: %s, Date: %s, Status: %d\n",
-             task.brand, task.driverName, task.description, task.assignee, task.date1, task.status);
+  while (fread(&project, sizeof(struct Project), 1, fp) == 1) {
+    if (strcmp(driverName,project.driverName)==0) {
+        return 1;
     }
   }
 
   fclose(fp);
-  return 1;
+  return -1;
 }
 
 /**
@@ -1088,7 +1326,10 @@ int projectMenu()
                 readProject();
             }
             else if (selectedOption == 2) {
-                setBackgorundColor(3);
+                updateProjectFlag=1;
+                deleteProject();
+                addProject();
+                updateProjectFlag = 0;
             }
             else if (selectedOption == 3) {
                 deleteProject();
@@ -1132,13 +1373,13 @@ int taskMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
-                setBackgorundColor(1);
+                addTask();
             }
             else if (selectedOption == 1) {
-                setBackgorundColor(2);
+                readTask();
             }
             else if (selectedOption == 2) {
-                setBackgorundColor(3);
+                updateTaskStatus();
             }
             else if (selectedOption == 3) {
                 break;

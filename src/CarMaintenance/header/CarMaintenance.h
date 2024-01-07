@@ -180,7 +180,7 @@ int updateProject();
  * @param taskNumber The number of tasks in the array.
  * @return Returns 0 on success, -1 on failure.
  */
-int addTask(struct Task task[],size_t taskNumber);
+int addTask();
 
 /**
  * @brief Reads a task.
@@ -190,6 +190,7 @@ int addTask(struct Task task[],size_t taskNumber);
  * @return Returns 0 on success, -1 on failure.
  */
 int readTask();
+int readTaskControl(const char *driverName);
 
 /**
  * @brief Updates the status of a task based on the driver's name.

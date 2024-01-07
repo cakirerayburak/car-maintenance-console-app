@@ -607,6 +607,7 @@ int main() {
     deleteSupplier("Elf");
     readSupplier();
     */
+  
   mainMenu();
   return 0;
 }
