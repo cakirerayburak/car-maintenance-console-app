@@ -1357,18 +1357,100 @@ int costReports() {
             setCursorPosition(x + 22, y + 7);
             printf("Price: %d", cost.price);
             setCursorPosition(x + 22, y + 8);
-            printf("Date Added: %s", cost.date1);
-
-            
-            
+            printf("Date Added: %s", cost.date1);       
             _getch();
         }
     }
-
     fclose(fp);
     return 1;
+}
 
 
+// bplustree.c
+
+struct BPlusTree* createBPlusTree() {
+    struct BPlusTree* bPlusTree = (struct BPlusTree*)malloc(sizeof(struct BPlusTree));
+    if (bPlusTree != NULL) {
+        bPlusTree->root = NULL;
+    }
+    return bPlusTree;
+}
+
+struct BPlusNode* createNode() {
+    struct BPlusNode* newNode = (struct BPlusNode*)malloc(sizeof(struct BPlusNode));
+    if (newNode != NULL) {
+        newNode->count = 0;
+        newNode->isLeaf = 1;
+        for (int i = 0; i < 5; i++) {
+            newNode->children[i] = NULL;
+        }
+    }
+    return newNode;
+}
+
+int insertSupplier(struct BPlusTree* bPlusTree, const struct Supplier* supplier) {
+    if (bPlusTree->root == NULL) {
+        bPlusTree->root = createNode();
+    }
+
+    return insertNonFull(bPlusTree->root, supplier);
+}
+
+int insertNonFull(struct BPlusNode* node, const struct Supplier* supplier) {
+    int i = node->count - 1;
+
+    if (node->isLeaf) {
+        while (i >= 0 && strcmp(supplier->supplierName, node->data[i].supplierName) < 0) {
+            node->data[i + 1] = node->data[i];
+            i--;
+        }
+
+        strcpy(node->data[i + 1].supplierName, supplier->supplierName);
+        strcpy(node->data[i + 1].contactNumber, supplier->contactNumber);
+        strcpy(node->data[i + 1].bussinesType, supplier->bussinesType);
+        strcpy(node->data[i + 1].email, supplier->email);
+        node->count++;
+    }
+    else {
+        while (i >= 0 && strcmp(supplier->supplierName, node->data[i].supplierName) < 0) {
+            i--;
+        }
+
+        i++;
+
+        if (node->children[i] != NULL && node->children[i]->count == 4) {
+            splitChild(node, i);
+
+            if (strcmp(supplier->supplierName, node->data[i].supplierName) > 0) {
+                i++;
+            }
+        }
+
+        return insertNonFull(node->children[i], supplier);
+    }
+
+    return 1;  // Başarı durumu
+}
+
+void splitChild(struct BPlusNode* parentNode, int index) {
+    struct BPlusNode* childNode = parentNode->children[index];
+    struct BPlusNode* newChildNode = createNode();
+    parentNode->count++;
+
+    for (int i = 2; i < 4; i++) {
+        newChildNode->data[i - 2] = childNode->data[i];
+        newChildNode->count++;
+        childNode->count--;
+    }
+
+    parentNode->data[index] = childNode->data[1];
+
+    for (int i = 2; i < 5; i++) {
+        newChildNode->children[i - 2] = childNode->children[i];
+        childNode->children[i] = NULL;
+    }
+
+    parentNode->children[index + 1] = newChildNode;
 }
 
 /**
@@ -1384,7 +1466,7 @@ int costReports() {
  * @warning This function assumes that the "supplier.bin" file contains binary data of Supplier structures.
  * The file should be opened in "ab" mode for appending.
  */
-int addSupplier() {
+int addSupplier(struct BPlusTree* bPlusTree) {
     FILE* fp;
     errno_t err = fopen_s(&fp, "supplier.bin", "ab");
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -1423,7 +1505,7 @@ int addSupplier() {
     setCursorPosition(x + 22, y + 4);
     printf("Contact Number:");
     setCursorPosition(x + 39, y + 4);
-    scanf(" %[^\n]", supplier.contactNumber); 
+    scanf(" %[^\n]", supplier.contactNumber);
 
     setCursorPosition(x + 22, y + 5);
     printf("Bussines Type:");
@@ -1435,8 +1517,8 @@ int addSupplier() {
     setCursorPosition(x + 30, y + 6);
     scanf(" %[^\n]", supplier.email);
 
-
     fwrite(&supplier, sizeof(struct Supplier), 1, fp);
+    insertSupplier(bPlusTree, &supplier); // B+ tree'ye ekleme işlemi
     setCursorPosition(x + 25, y + 7);
     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
     if (updateSupplierFlag == 0) { printf("Supplier Added Successfully"); }
@@ -1447,7 +1529,6 @@ int addSupplier() {
     fclose(fp);
     return 1;
 }
-
 /**
  * @brief Reads and prints supplier information from the "supplier.bin" file.
  *
@@ -1977,12 +2058,14 @@ int supplierMenu()
         }
         else if (key == 13) {
             if (selectedOption == 0) {
-                addSupplier();
+                struct BPlusTree* bPlusTree = createBPlusTree();
+                addSupplier(bPlusTree);
             }
             else if (selectedOption == 1) {
                 updateSupplierFlag = 1;
                 deleteSupplier();
-                addSupplier();
+                struct BPlusTree* bPlusTree = createBPlusTree();
+                addSupplier(bPlusTree);
                 updateSupplierFlag = 0;
             }
             else if (selectedOption == 2) {

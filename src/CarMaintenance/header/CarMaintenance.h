@@ -88,6 +88,22 @@ private:
     Project* projects;
     bool* isOccupied;
 };
+struct BPlusNode {
+    int count;
+    int isLeaf;
+    struct Supplier data[4];
+    struct BPlusNode* children[5];
+};
+
+struct BPlusTree {
+    struct BPlusNode* root;
+};
+
+struct BPlusTree* createBPlusTree();
+struct BPlusNode* createNode();
+int insertSupplier(struct BPlusTree* bPlusTree, const struct Supplier* supplier);
+int insertNonFull(struct BPlusNode* node, const struct Supplier* supplier);
+void splitChild(struct BPlusNode* parentNode, int index);
 
 /**
  * @brief Adds users to the system.
@@ -251,7 +267,7 @@ int readCost();
  * @param supplierNumber The number of suppliers in the array.
  * @return Returns 0 on success, -1 on failure.
  */
-int addSupplier();
+int addSupplier(struct BPlusTree* bPlusTree);
 
 /**
  * @brief Reads a supplier.
