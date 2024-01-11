@@ -7,6 +7,7 @@
 #define CONSOLE_H
 
 #include <windows.h>
+#include <iostream>
 
 /**
  * @brief Enumeration representing console text colors.
@@ -31,7 +32,7 @@ enum ConsoleColor {
 };
 
 
-int mainMenu();
+int mainMenu(std::istream& in, std::ostream& out);
 int displayMenu(const char **menuOptions, int selectedOption, int menuSize, int x, int y);
 int setCursorPosition(int x, int y);
 

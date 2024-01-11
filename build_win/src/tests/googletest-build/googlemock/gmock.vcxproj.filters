@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\tests\googletest\googletest\src\gtest-all.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\tests\googletest\googlemock\src\gmock-all.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\tests\googletest\googlemock\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{AD7B4613-DB52-3A3C-8D40-D9896C64F60D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -239,7 +239,6 @@ int readUser(const char* username, int password) {
             printf("Username: %s, Password: %d, Status: %d\n", user.username, user.password, user.status);
         }
     }
-
     fclose(fp);
     return 1;
 }
@@ -409,7 +408,7 @@ int addProject() {
       SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
       if(updateProjectFlag==0){printf("Project Added Successfully");}
       if (updateProjectFlag == 1) { printf("Project Updated Successfully"); }
-      Sleep(2000);
+      Sleep(10);
       SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
       
 
@@ -511,7 +510,7 @@ int deleteProject() {
     if(updateProjectFlag==0){printf("Project Deleted Successfully");}
     if (updateProjectFlag == 1) { printf("Project Updated Successfully"); }
   SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
-  Sleep(2000);
+  Sleep(100);
   fclose(fp);
   return 1;
 }
@@ -1740,7 +1739,7 @@ int setBackgorundColor(int backgroundColor) {
 int guestMode = 0;
 
 
-int mainMenu() {
+int mainMenu(std::istream& in, std::ostream& out) {
   int selectedOption = 0;
   int x = 30;
   int y = 10;
@@ -2233,7 +2232,7 @@ int login()
             setCursorPosition(x + 20, y + 13);
             SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
             printf("             Access             \n");
-            Sleep(1000);
+            Sleep(100);
             SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
             return 1; // Successful login
         }

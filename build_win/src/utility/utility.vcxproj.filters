@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\utility\src\mathUtility.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\utility\header\commonTypes.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\utility\header\mathUtility.h">
+      <Filter>header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\src\utility\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="header">
+      <UniqueIdentifier>{8114978A-AA10-3695-AAD5-B4BA829ABE14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{CA21963D-4B5B-343F-B94A-2CDE95CF16A2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

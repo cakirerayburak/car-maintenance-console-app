@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\DataStructures\ce205-final-eray-burak-cakir-cpp\build_win\CMakeFiles\f590b2e04d26fcdcea87f5476eef8b24\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D0AB2FF5-554D-35F3-9552-1F739FE5D837}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
